@@ -1,0 +1,14 @@
+Constructores 
+	Dirigido -->  
+	No dirigido -->
+
+	¿QUE NODOS ESTÁN CONECTADOS ENTRE SI?
+
+Atributos 
+	Vector de vertices --> Cada vez que se inserta un nuevo vertice se redimensiona 1 espacio más.
+	
+	Matriz de Adyacencias --> [][] la cual tiene de tamaño el numero de elementos que haya en el vector de Vertices???????????????
+	Si la etiqueta de uno y la de otro están conectados se le pone 1
+	
+
+Crear una clase Punto

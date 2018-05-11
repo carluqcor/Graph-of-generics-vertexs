@@ -1,20 +1,18 @@
 /*! 
-   \file Grafo.hpp
-   \brief Fichero de la clase Grafo
+   \file Punto.hpp
+   \brief Fichero de la clase Punto
    \author Carlos Luque Córdoba
    \date   anywhere
 */
 
-#ifndef _GRAFO_HPP_
-#define _GRAFO_HPP_
+#ifndef _PUNTO_HPP_
+#define _PUNTO_HPP_
 
 // Entrada y salida 
 #include <iostream>
 
 // Para controlar las precondiciones y postcondiciones mediante asertos
 #include <cassert>
-
-#include "Vertice.h"
 
 // Para la sobrecarga de los operadores de flujo: << y >>
 using std::istream;
@@ -24,27 +22,21 @@ using std::ostream;
 namespace ed{
 
 //!  Definición de la clase Grafo
-class Grafo{
+class Punto{
 	
 	private:
-		Vertice _vectorDeVertices[]; //!Vector de vertices
-		int _grafoMatriz [size()] [size()]; //!Matriz cuadrada de adyacencias
-	
+		double _x //!Atributo para la posición x del punto
+		double _y //!Atributo para la posición y del punto
+
 	public:
 		//!Constructores de la clase Grafo
-		inline Grafo();
-
-		inline Grafo();
+		inline Punto(double x, double y){
+			_x=x;
+			_y=y;
+		}
 		//!Observadores públicos de la clase Grafo
 
 		//!Modificadores públicos de la clase Grafo
-
-
-	//! Sobrecarga del operador de salida
-	ostream &operator<<(ostream &stream, ed::Vertice const &vertice);
-
-	//! Sobrecarga del operador de entrada
-	istream &operator>>(istream &stream, ed::Vertice &vertice); 
 
 	}; //Se cierra la clase Grafo
 } //Se cierra el espacio de nombres de la asignatura ED
