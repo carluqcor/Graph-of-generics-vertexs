@@ -17,6 +17,9 @@
 // Abs para cotas de error de numeros reales positivos
 #include <cmath>
 
+#include "Punto.hpp"
+
+
 #define COTA_ERROR   1.0e-6 //!< Cota de error para la comparación de números reales
 
 
@@ -31,21 +34,21 @@ namespace ed{
 class Vertice{
 	
 	private:
-		double _vectorCoordenas[2];
-		int _i=0;
+		double _x,
+		double _y;
 	
 	public:
 		//! Observadores públicos de la clase Vertice
-		inline double getDataX(){return _vectorCoordenas[0];}
+		inline double const getDataX()const{return _x;}
 
-		inline double getDataY(){return _vectorCoordenas[1];}
+		inline double const getDataY()const{return _y;}
 
 		int getLabel(double vector);
 
 		//! Modificadores públicos de la clase Vertice
 
 		inline void setDataX(double vector){
-			_vectorCoordenas[0]=vector;	
+			_x=vector;	
 
 			#ifndef NDEBUG
 				assert(std::abs(getDataX()-vector)<COTA_ERROR);
@@ -53,7 +56,7 @@ class Vertice{
 		}
 
 		inline void setDataY(double vector){
-			_vectorCoordenas[1]=vector;
+			_y=vector;
 			
 			#ifndef NDEBUG
 				assert(std::abs(getDataY()-vector)<COTA_ERROR);
@@ -63,14 +66,7 @@ class Vertice{
 		inline void setData(double x, double y){
 			setDataX(x);
 			setDataY(y);
-		//	t++;
-		//	aumentarEtiqueta(t);
 		}
-/*
-		inline void aumentarEtiqueta(int t){
-			_i=t;
-		}
-*/
 	}; //Se cierra la clase Vertice
 } //Se cierra el espacio de nombres de la asignatura ED
 #endif
