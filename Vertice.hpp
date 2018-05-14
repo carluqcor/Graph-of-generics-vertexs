@@ -34,39 +34,26 @@ namespace ed{
 class Vertice{
 	
 	private:
-		double _x,
-		double _y;
+		ed::Punto _punto;
+		int _label;
 	
 	public:
+		//! Constructores públicos de la clase Vertice
+		inline Vertice(ed::Punto punto, int label=-1){
+			setPunto(punto);
+			_label=label;
+		}
+
 		//! Observadores públicos de la clase Vertice
-		inline double const getDataX()const{return _x;}
+		inline Punto const getPunto() const {return _punto;} //Controlar asertos
 
-		inline double const getDataY()const{return _y;}
-
-		int getLabel(double vector);
+		int getLabel() const {return _label;}
 
 		//! Modificadores públicos de la clase Vertice
-
-		inline void setDataX(double vector){
-			_x=vector;	
-
-			#ifndef NDEBUG
-				assert(std::abs(getDataX()-vector)<COTA_ERROR);
-			#endif
+		inline void setPunto(ed::Punto &punto){
+			_punto=punto;
 		}
 
-		inline void setDataY(double vector){
-			_y=vector;
-			
-			#ifndef NDEBUG
-				assert(std::abs(getDataY()-vector)<COTA_ERROR);
-			#endif
-		}
-
-		inline void setData(double x, double y){
-			setDataX(x);
-			setDataY(y);
-		}
 	}; //Se cierra la clase Vertice
 } //Se cierra el espacio de nombres de la asignatura ED
 #endif

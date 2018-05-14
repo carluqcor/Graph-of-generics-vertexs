@@ -23,7 +23,9 @@ namespace ed{
 class Lado{
 
 	public:
-		//!Observadores públicos de la clase Lado
+		//! Constructor públicos de la clase Vertice
+
+		//! Observadores públicos de la clase Lado
 		inline Lado const getLado(Lado const &Lado) const {return Lado;}
 
 		bool has(Vertice const &u);
@@ -34,7 +36,7 @@ class Lado{
 
 		Vertice second();
 
-		//!Modificadores públicos de la clase Lado
+		//! Modificadores públicos de la clase Lado
 		inline void setLado(Lado &lado, double x, double y){lado(x,y);}
 
 	}; //Se cierra la clase Lado

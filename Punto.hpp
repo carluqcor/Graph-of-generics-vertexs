@@ -22,6 +22,10 @@ namespace ed{
 //!  Definición de la clase Punto
 class Punto{
 
+	private:
+		double _x;
+		double _y; 
+
 	public:
 		//!Constructores de la clase Punto
 		inline Punto(double x=0.0, double y=0.0){
@@ -29,11 +33,28 @@ class Punto{
 			setDataY(y);
 		}
 		//!Observadores públicos de la clase Punto
-		inline Punto const getPunto(Punto const &punto) const {return punto;} //Controlar asertos
 
 		//!Modificadores públicos de la clase Punto
-		inline void setPunto(Punto &punto, double x, double y){Punto(x,y);}
+		inline void setDataX(double vector){
+			_x=vector;	
 
+			#ifndef NDEBUG
+				assert(std::abs(getDataX()-vector)<COTA_ERROR);
+			#endif
+		}
+
+		inline void setDataY(double vector){
+			_y=vector;
+			
+			#ifndef NDEBUG
+				assert(std::abs(getDataY()-vector)<COTA_ERROR);
+			#endif
+		}
+
+		inline void setData(double x, double y){
+			setDataX(x);
+			setDataY(y);
+		}
 	}; //Se cierra la clase Punto
 } //Se cierra el espacio de nombres de la asignatura ED
 #endif

@@ -39,23 +39,39 @@ class Grafo: public ed::GrafoInterfaz{
 	
 	private:
 		std::vector<Vertice> _vectorVertices; //!Vector de vertices de la STL
+		std::vector<Vertice>::iterator it;
 		std::vector<Lado> _ladoVertices; //!Vector de vertices de la STL
-		int _grafoMatriz [_vectorVertices.size()] [_vectorVertices.size()]; //!Matriz cuadrada de adyacencias
+		int _grafoMatriz [_vectorVertices.size()] [_vectorVertices.size()]; //!Matriz cuadrada de adyacencias ES ESTATICA
+		std::vector<int>_label;
 		Vertice _currVertex;
 		Lado _currEdge;
 
 	public:
 		//!Constructores de la clase Grafo
-		inline Grafo(_vectorVertices, );
+		inline Grafo(std::vector<Vertice>v, std::vector<Lado>l, int matriz[_vectorVertices.size()][_vectorVertices.size()]){
+
+		}
 
 		//!Observadores públicos de la clase Grafo
-		inline bool isEmpty();
-
-		bool isDirected();
+		inline bool isEmpty(){
+			bool val=false;
+			if(_vectorVertices.empty())
+				val=true;
+			#ifndef NDEBUG
+				assert(val==(size()==0));
+			#endif
+				return val;
+		}
 
 		bool adjacent(Vertice &u, Vertice &v);
 
-		bool hasCurrVertex();
+		bool hasCurrVertex(){
+			for(it=_vectorVertices.begin(); it != jugadores_.end(); it++){
+				if(it==(*(this)))
+					return true;
+			}
+			return false;		
+		}
 
 		inline Vertice currVertex(){
 			#ifndef NDEBUG
@@ -73,17 +89,36 @@ class Grafo: public ed::GrafoInterfaz{
 				return *this;
 		}
 
+		int getLabelVertex() const {
+			bool value=false;
+			int i,j;
+			for(i=0;i<(_label.size());i++){
+				for(j=1;j<(label.size());j++){
+					if(_label[i]==_label[j])
+						value=true;
+				}
+			}
+			#ifndef NDEBUG
+				assert(value==false);
+			#endif
+
+			return this->_label;
+		}
 
 		//! Modificadores públicos del grafo de la clase Grafo
 		inline void addVertex(double x, double y){
 			Punto punto = new Punto(x,y);
-			Vertice vertice =new Vertice(punto, _vectorVertices.size());
+			Vertice vertice =new Vertice(punto, _vectorVertices.size()+1);
 			_vectorVertices.pushBack(vertice);
-
+			setLabelVertex(_vectorVertices.size()+1);
 			#ifndef NDEBUG
 				assert(this->hasCurrEdge());
-				assert(abs(currVertex().getDataX()-x)<COTA_ERROR && abs(currVertex().getDataY()-y)<COTA_ERROR)
+				assert(std::abs(currVertex().getDataX()-x)<COTA_ERROR && abs(currVertex().getDataY()-y)<COTA_ERROR)
 			#endif
+		}
+
+		inline void setLabelVertex(int label){
+			_label.push(label);
 		}
 
 		void addEdge(Vertice const &u, Vertice const &v, Lado &lado);
