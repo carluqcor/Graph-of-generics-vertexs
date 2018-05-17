@@ -14,7 +14,10 @@
 // Para controlar las precondiciones y postcondiciones mediante asertos
 #include <cassert>
 
-#include "Vertice.hpp"
+#include <cmath>
+
+#define COTA_ERROR   1.0e-6 //!< Cota de error para la comparación de números reales
+
 
 // Se incluye la clase Fecha dentro del espacio de nombres de la asigantura: ed
 namespace ed{
@@ -33,6 +36,8 @@ class Punto{
 			setDataY(y);
 		}
 		//!Observadores públicos de la clase Punto
+		inline double getDataX(){return _x;}
+		inline double getDataY(){return _y;}
 
 		//!Modificadores públicos de la clase Punto
 		inline void setDataX(double vector){

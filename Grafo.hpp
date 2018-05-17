@@ -16,13 +16,12 @@
 
 #include <vector>
 
-#include "Vertice.h"
+#include "Vertice.hpp"
+#include "GrafoInterfaz.hpp"
+#include "Punto.hpp"
 
 //Librería que incluye el uso de abs para el control de cota de error
 #include <cmath>
-
-#include "Punto.hpp"
-
 
 #define COTA_ERROR   1.0e-6 //!< Cota de error para la comparación de números reales
 
@@ -35,16 +34,15 @@ using std::ostream;
 namespace ed{
 
 //!  Definición de la clase Grafo
-class Grafo: public ed::GrafoInterfaz{
+class Grafo : public ed::GrafoInterfaz{
 	
 	private:
 		std::vector<Vertice> _vectorVertices; //!Vector de vertices de la STL
 		std::vector<Vertice>::iterator it;
-		std::vector<Lado> _ladoVertices; //!Vector de vertices de la STL
+		std::vector<Lado> _vectorLado; //!Vector de vertices de la STL
+		std::vector<Lado>::iterator itEdge;
 		int _grafoMatriz [_vectorVertices.size()] [_vectorVertices.size()]; //!Matriz cuadrada de adyacencias ES ESTATICA
 		std::vector<int>_label;
-		Vertice _currVertex;
-		Lado _currEdge;
 
 	public:
 		//!Constructores de la clase Grafo
@@ -58,98 +56,107 @@ class Grafo: public ed::GrafoInterfaz{
 			if(_vectorVertices.empty())
 				val=true;
 			#ifndef NDEBUG
-				assert(val==(size()==0));
+				assert(val==(_vectorVertices.size()==0));
 			#endif
 				return val;
 		}
 
-		bool adjacent(Vertice &u, Vertice &v);
+		bool adjacent(Vertice const &u, Vertice const &v);
 
-		bool hasCurrVertex(){
-			for(it=_vectorVertices.begin(); it != jugadores_.end(); it++){
-				if(it==(*(this)))
-					return true;
-			}
-			return false;		
+		bool has(Vertice const &u);
+
+		bool hasEdge(Lado const &lado);
+
+		inline bool hasCurrVertex(){
+			if(has(it))
+				return true;
+			else
+				return false;		
 		}
 
 		inline Vertice currVertex(){
 			#ifndef NDEBUG
-				assert(this->hasCurrVertex());
+				assert(hasCurrVertex());
 			#endif
-				return *this;
+				return it;
 		}
 
-		bool hasCurrEdge();
+		inline bool hasCurrEdge(){
+			if(hasEdge(itEdge))
+				return true;
+			else
+				return false;	
+		}
 		
 		inline Lado currEdge(){
 			#ifndef NDEBUG
-				assert(this->hasCurrEdge());
+				assert(hasCurrEdge());
 			#endif
-				return *this;
+				return itEdge;
 		}
 
-		int getLabelVertex() const {
+		int getLabelVertex(Vertice const &u) const {
 			bool value=false;
-			int i,j;
+			int i;
 			for(i=0;i<(_label.size());i++){
-				for(j=1;j<(label.size());j++){
-					if(_label[i]==_label[j])
-						value=true;
-				}
+				if(_label[i]==u.getLabel())
+					value=true;
 			}
 			#ifndef NDEBUG
 				assert(value==false);
 			#endif
 
-			return this->_label;
+			return _label.at(u.getLabel());
 		}
 
 		//! Modificadores públicos del grafo de la clase Grafo
 		inline void addVertex(double x, double y){
 			Punto punto = new Punto(x,y);
 			Vertice vertice =new Vertice(punto, _vectorVertices.size()+1);
-			_vectorVertices.pushBack(vertice);
+			_vectorVertices.push_back(vertice);
 			setLabelVertex(_vectorVertices.size()+1);
 			#ifndef NDEBUG
-				assert(this->hasCurrEdge());
-				assert(std::abs(currVertex().getDataX()-x)<COTA_ERROR && abs(currVertex().getDataY()-y)<COTA_ERROR)
+				assert(this->hasCurrVertex());
 			#endif
 		}
 
 		inline void setLabelVertex(int label){
-			_label.push(label);
+			_label.push_back(label);
 		}
 
-		void addEdge(Vertice const &u, Vertice const &v, Lado &lado);
+		inline void addEdge(Vertice &u, Vertice &v, Lado &lado, double coste){
+			lado.setLadoName(getLabelVertex(u)+" "+	getLabelVertex(v));
+			lado.setFirstVertex(u);
+			lado.setSecondVertex(v);
+			lado.setLadoCoste(coste);
+
+			_vectorLado.push_back(lado);
+
+			#ifndef NDEBUG
+				assert(this->hasCurrEdge());
+				assert(has(u) && has(v));
+				assert(coste>=0);
+			#endif
+		}
 
 		void removeVertex();
 		/*
-			1.Si hay lados(bool adjacent) Se deben borrar sus lados por lo tanto primero se guardará el vertice en uno auxiliar, y mientras adjacent sea true se usará nextEdge() y currEdge y se borrará y se volverá al vertice con goToVertex
-			2.Se borra el vertice actual (NO EL AUXILIAR CREADO) osea un _vectorVertices.erase(*this) y se hace un nextVertex()
+			1. Si hay lados(bool adjacent) Se deben borrar sus lados por lo tanto primero se guardará el vertice en uno auxiliar, y mientras adjacent sea true se usará nextEdge() y currEdge y se borrará y se volverá al vertice con goToVertex
+			2. Se borra el vertice actual (NO EL AUXILIAR CREADO) osea un _vectorVertices.erase(*this) y se hace un nextVertex()
+			3. Borrar la etiqueta de ese vertice
 		*/
 
-		inline void removeEdge(){
-			#ifndef NDEBUG
-				assert(this->hasCurrEdge());
-			#endif
-			
-			_ladoVertices.erase(currVertex());
-
-			#ifndef NDEBUG
-				assert((this->hasCurrEdge())==false);
-			#endif
-		}
+		void removeEdge();
 
 		inline void removeAllVertexAndEdges(){
-			_ladoVertices.clear();
+			_vectorLado.clear();
 			_vectorVertices.clear();
 			#ifndef NDEBUG
 				assert(isEmpty());
 			#endif
 		}
 
-		//! Modificadores públicos del cursor del grafo de la clase Grafo
+		//! Modificadores públicos de los cursores de la clase Grafo
 		void findFirstVertex(double x, double y);
 
 		void findNextVertex(double x, double y);

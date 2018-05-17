@@ -34,12 +34,12 @@ namespace ed{
 class Vertice{
 	
 	private:
-		ed::Punto _punto;
+		Punto _punto;
 		int _label;
 	
 	public:
 		//! Constructores públicos de la clase Vertice
-		inline Vertice(ed::Punto punto, int label=-1){
+		inline Vertice(Punto punto, int label=-1){
 			setPunto(punto);
 			_label=label;
 		}
@@ -50,7 +50,7 @@ class Vertice{
 		int getLabel() const {return _label;}
 
 		//! Modificadores públicos de la clase Vertice
-		inline void setPunto(ed::Punto &punto){
+		inline void setPunto(Punto &punto){
 			_punto=punto;
 		}
 
