@@ -34,25 +34,44 @@ namespace ed{
 class Vertice{
 	
 	private:
-		Punto _punto;
-		int _label;
+		Punto<float> _punto;
+		unsigned int _label;
 	
 	public:
 		//! Constructores públicos de la clase Vertice
-		inline Vertice(Punto punto, int label=-1){
+		inline Vertice(Punto<float> punto, unsigned int label=-1){
 			setPunto(punto);
+			setLabel(label);
+		}
+/*
+		inline Vertice(Vertice &vertice){
+			setVertice(vertice);
+		}
+*/
+		//! Observadores públicos de la clase Vertice
+		inline Punto<float> const getPunto() const {return _punto;} //Controlar asertos
+
+		inline int getLabel() const {return _label;}
+
+		//! Modificadores públicos de la clase Vertice
+		inline void setPunto(Punto<float> &punto){
+			_punto=punto;
+		}
+
+		inline void setLabel(int label){
 			_label=label;
 		}
 
-		//! Observadores públicos de la clase Vertice
-		inline Punto const getPunto() const {return _punto;} //Controlar asertos
 
-		int getLabel() const {return _label;}
+		/*inline void setVertice(Vertice &vertice){
+			_vertex=vertice;
+		}*/
 
-		//! Modificadores públicos de la clase Vertice
-		inline void setPunto(Punto &punto){
-			_punto=punto;
+		inline Vertice &operator=(Vertice const &u){
+			return (*(this)=u);
 		}
+
+
 
 	}; //Se cierra la clase Vertice
 } //Se cierra el espacio de nombres de la asignatura ED

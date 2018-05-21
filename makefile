@@ -41,15 +41,15 @@ Punto.o: Punto.cpp Punto.hpp
 			@g++ $(CPPFLAGS) $<
 
 #
+Vertice.o: Vertice.cpp Vertice.hpp \ Punto.hpp 
+			@echo "Compilando " $<
+			@g++ $(CPPFLAGS) $<
+
+#
 Lado.o: Lado.cpp Lado.hpp
 			@echo "Compilando " $<
 			@g++ $(CPPFLAGS) $<
 
-
-#
-Vertice.o: Vertice.cpp Vertice.hpp \ Punto.hpp 
-			@echo "Compilando " $<
-			@g++ $(CPPFLAGS) $<
 
 Grafo.o:   Grafo.cpp Grafo.hpp Vertice.hpp Punto.hpp Lado.hpp
 			@echo "Compilando " $<

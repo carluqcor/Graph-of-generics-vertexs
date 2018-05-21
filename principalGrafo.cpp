@@ -16,13 +16,14 @@
 #include <iostream>
 #include <string>
 
+#include "macros.hpp"
+
 #include "Punto.hpp"
 #include "Vertice.hpp"
 #include "Lado.hpp"
 #include "Grafo.hpp"
-
 #include "funcionesAuxiliares.hpp"
-#include "macros.hpp"
+
 
 /*! 
 	\brief   Programa principal de la práctica 4: Grafo Abarcador de coste mínimo

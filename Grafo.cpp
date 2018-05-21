@@ -133,7 +133,7 @@ void ed::Grafo::goToEdge(ed::Vertice const &u, ed::Vertice const &v){
 			ed::Lado lado=new ed::Lado(ot.getLadoName(), v, u, ot.getLadoCoste());
 			itEdge=_vectorLado.at(lado);
 		}
-	}*
+	}
 }
 
 void ed::Grafo::goToFirstVertex(){

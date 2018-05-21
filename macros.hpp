@@ -30,8 +30,7 @@
 #define UNDERLINE   "\e[4m"  //!< subrayado
 #define BLINK       "\e[5m"  //!< Blink
 
-#define INVERSE     "\e[7m"  //!< Inverse
-
+#define INVERSE     "\e[7m"  //!< Inverse  
 
 //!< regular colors
 #define BLACK		"\e[0;30m"  //!< Black

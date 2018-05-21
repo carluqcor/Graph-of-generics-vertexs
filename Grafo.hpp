@@ -37,20 +37,26 @@ namespace ed{
 class Grafo : public ed::GrafoInterfaz{
 	
 	private:
-		std::vector<Vertice> _vectorVertices; //!Vector de vertices de la STL
+		std::vector<Vertice> _vectorVertices; //! Vector de vertices de la STL
 		std::vector<Vertice>::iterator it;
-		std::vector<Lado> _vectorLado; //!Vector de vertices de la STL
+		//Vertice *it;
+		
+		Matriz _adjacent;
+
+		std::vector<Lado> _vectorLado; //! Vector de vertices de la STL
 		std::vector<Lado>::iterator itEdge;
-		int _grafoMatriz [_vectorVertices.size()] [_vectorVertices.size()]; //!Matriz cuadrada de adyacencias ES ESTATICA
+		//Lado *itEdge;
+
 		std::vector<int>_label;
 
 	public:
-		//!Constructores de la clase Grafo
-		inline Grafo(std::vector<Vertice>v, std::vector<Lado>l, int matriz[_vectorVertices.size()][_vectorVertices.size()]){
+		//! Constructores de la clase Grafo
+		inline Grafo(std::vector<Vertice>v, std::vector<Lado>l, Matriz adjacent){
+			_vectorVertices=v;
 
 		}
-
-		//!Observadores públicos de la clase Grafo
+		
+		//! Observadores públicos de la clase Grafo
 		inline bool isEmpty(){
 			bool val=false;
 			if(_vectorVertices.empty())
@@ -60,12 +66,11 @@ class Grafo : public ed::GrafoInterfaz{
 			#endif
 				return val;
 		}
-
 		bool adjacent(Vertice const &u, Vertice const &v);
 
-		bool has(Vertice const &u);
+		bool has(std::vector<Vertice>::iterator ot);
 
-		bool hasEdge(Lado const &lado);
+		bool hasEdge(std::vector<Lado>::iterator otEdge);
 
 		inline bool hasCurrVertex(){
 			if(has(it))
@@ -78,7 +83,8 @@ class Grafo : public ed::GrafoInterfaz{
 			#ifndef NDEBUG
 				assert(hasCurrVertex());
 			#endif
-				return it;
+			
+			return *it;
 		}
 
 		inline bool hasCurrEdge(){
@@ -92,12 +98,12 @@ class Grafo : public ed::GrafoInterfaz{
 			#ifndef NDEBUG
 				assert(hasCurrEdge());
 			#endif
-				return itEdge;
+				return *itEdge;
 		}
 
 		int getLabelVertex(Vertice const &u) const {
 			bool value=false;
-			int i;
+			unsigned int i;
 			for(i=0;i<(_label.size());i++){
 				if(_label[i]==u.getLabel())
 					value=true;
@@ -111,10 +117,10 @@ class Grafo : public ed::GrafoInterfaz{
 
 		//! Modificadores públicos del grafo de la clase Grafo
 		inline void addVertex(double x, double y){
-			Punto punto = new Punto(x,y);
-			Vertice vertice =new Vertice(punto, _vectorVertices.size()+1);
+		Punto <float> *punto = new Punto<float>(x,y);
+			Vertice vertice = new Vertice(punto, (_label.size())+1);
 			_vectorVertices.push_back(vertice);
-			setLabelVertex(_vectorVertices.size()+1);
+			setLabelVertex(_label.size()+1);
 			#ifndef NDEBUG
 				assert(this->hasCurrVertex());
 			#endif
@@ -140,12 +146,6 @@ class Grafo : public ed::GrafoInterfaz{
 		}
 
 		void removeVertex();
-		/*
-			1. Si hay lados(bool adjacent) Se deben borrar sus lados por lo tanto primero se guardará el vertice en uno auxiliar, y mientras adjacent sea true se usará nextEdge() y currEdge y se borrará y se volverá al vertice con goToVertex
-			2. Se borra el vertice actual (NO EL AUXILIAR CREADO) osea un _vectorVertices.erase(*this) y se hace un nextVertex()
-			3. Borrar la etiqueta de ese vertice
-		*/
-
 		void removeEdge();
 
 		inline void removeAllVertexAndEdges(){
@@ -157,13 +157,14 @@ class Grafo : public ed::GrafoInterfaz{
 		}
 
 		//! Modificadores públicos de los cursores de la clase Grafo
+		
 		void findFirstVertex(double x, double y);
 
 		void findNextVertex(double x, double y);
 
-		void findFirstEdge(/**/);
+		void findFirstEdge();
 
-		void findNextEdge(/**/);
+		void findNextEdge();
 
 		void goToVertex(Vertice const &vertice);
 		/*
@@ -180,13 +181,13 @@ class Grafo : public ed::GrafoInterfaz{
 
 		void nextEdge();
 
-
+	}; //Se cierra la clase Grafo
+	
 	//! Sobrecarga del operador de salida
 	ostream &operator<<(ostream &stream, ed::Vertice const &vertice);
 
 	//! Sobrecarga del operador de entrada
 	istream &operator>>(istream &stream, ed::Vertice &vertice); 
 
-	}; //Se cierra la clase Grafo
 } //Se cierra el espacio de nombres de la asignatura ED
 #endif

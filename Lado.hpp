@@ -14,6 +14,7 @@
 // Para controlar las precondiciones y postcondiciones mediante asertos
 #include <cassert>
 
+#include "Punto.hpp"
 #include "Vertice.hpp"
 
 #include <cmath>
@@ -27,8 +28,8 @@ namespace ed{
 class Lado{
 		std::string _name;
 		double _coste;
-		Vertice _u;
-		Vertice _v;
+		Vertice *_u;
+		Vertice *_v;
 
 	public:
 		//! Constructor públicos de la clase Vertice
@@ -44,17 +45,13 @@ class Lado{
 
 		inline double getLadoCoste() const {return _coste;}
 
-		inline Vertice getFirstVertex() const {return _u;}
+		inline Vertice const *getFirstVertex() const {return _u;}
 
-		inline Vertice getSecondVertex() const {return _v;}
+		inline Vertice const *getSecondVertex() const {return _v;}
 
 	//	bool has(Vertice const &u);
 
 	//	Vertice const other(Vertice const &u);
-
-	//	Vertice first();
-
-	//	Vertice second();
 
 		//! Modificadores públicos de la clase Lado
 
@@ -70,11 +67,11 @@ class Lado{
 		}
 
 		inline void setFirstVertex(Vertice &u){
-			_u=u;
+			*_u=u;
 		}
 
 		inline void setSecondVertex(Vertice &v){
-			_v=v;
+			*_v=v;
 		}
 
 	}; //Se cierra la clase Lado
