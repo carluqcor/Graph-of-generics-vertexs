@@ -45,7 +45,7 @@ int main(){
 
 	std::vector<ed::Lado<ed::Punto<float> > >  vectorLado; //! Vector Lados de Puntos de la STL
 
-    //ed::Grafo <ed::Lado <ed::Vertice<ed::Punto<float> > > > graph(vectorVertices, vectorLado, matriz);
+    ed::Grafo <ed::Punto<float> > graph(vectorVertices, vectorLado, matriz);
 
     punto.escribirPunto();
     punto2.escribirPunto();
@@ -61,10 +61,10 @@ int main(){
     std::cout<<"Label: "<<Vertice1.getLabel()<<std::endl;
 
     (Vertice2.getPunto()).escribirPunto();
-    std::cout<<"Label: "<<Vertice2.getLabel()<<std::endl;
+    std::cout<<"Label2: "<<Vertice2.getLabel()<<std::endl;
 
     ed::Lado <ed::Punto<float> >  edge(Vertice1, Vertice2, dist);
-    
+
 	std::cout<<"First: ";
     (edge.getFirstVertex()->getPunto()).escribirPunto();
     std::cout<<std::endl;
