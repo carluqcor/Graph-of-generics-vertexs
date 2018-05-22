@@ -16,14 +16,9 @@
 
 #include <vector>
 
+#include "Lado.hpp"
 #include "Vertice.hpp"
-#include "GrafoInterfaz.hpp"
 #include "Punto.hpp"
-
-//Librería que incluye el uso de abs para el control de cota de error
-#include <cmath>
-
-#define COTA_ERROR   1.0e-6 //!< Cota de error para la comparación de números reales
 
 
 // Para la sobrecarga de los operadores de flujo: << y >>
@@ -33,44 +28,64 @@ using std::ostream;
 // Se incluye la clase Fecha dentro del espacio de nombres de la asigantura: ed
 namespace ed{
 
+//!  Definición de la plantilla de la clase Grafo
+template < class T > 
+
 //!  Definición de la clase Grafo
-class Grafo : public ed::GrafoInterfaz{
+class Grafo{
 	
 	private:
-		std::vector<Vertice> _vectorVertices; //! Vector de vertices de la STL
-		std::vector<Vertice>::iterator it;
-		//Vertice *it;
+		std::vector<Vertice<T> > _vectorVertices; //! Vector de vertices de la STL
+		typename std::vector<Vertice<T> >::const_iterator it;
 		
-		Matriz _adjacent;
+		std::vector<std::vector<int> > _matriz;
 
-		std::vector<Lado> _vectorLado; //! Vector de vertices de la STL
-		std::vector<Lado>::iterator itEdge;
-		//Lado *itEdge;
-
+		std::vector<Lado<T> > _vectorLado; //! Vector de vertices de la STL
+		typename std::vector<Lado<T> >::const_iterator itEdge;
+		
 		std::vector<int>_label;
 
 	public:
 		//! Constructores de la clase Grafo
-		inline Grafo(std::vector<Vertice>v, std::vector<Lado>l, Matriz adjacent){
+		inline Grafo(std::vector<Vertice<T> >v, std::vector<Lado<T> >l, std::vector<std::vector<int> >matriz){
 			_vectorVertices=v;
-
+			_vectorLado=l;
+			_matriz=matriz;
 		}
 		
 		//! Observadores públicos de la clase Grafo
 		inline bool isEmpty(){
-			bool val=false;
-			if(_vectorVertices.empty())
-				val=true;
-			#ifndef NDEBUG
-				assert(val==(_vectorVertices.size()==0));
-			#endif
-				return val;
+			if(_vectorVertices.size()==0)
+				return true;
+			else
+				return false;
 		}
-		bool adjacent(Vertice const &u, Vertice const &v);
 
-		bool has(std::vector<Vertice>::iterator ot);
+		bool adjacent(Vertice <T> const &u, Vertice <T> const &v);
 
-		bool hasEdge(std::vector<Lado>::iterator otEdge);
+		bool has(typename std::vector<Vertice<T> >::const_iterator ot){
+			#ifndef NDEBUG
+				assert(isEmpty()==false);
+			#endif
+			ot=_vectorVertices.begin();
+			for(ot; ot!=_vectorVertices.end(); ot++){
+				if(ot==currVertex())
+					return true;
+			}
+			return false;
+		}
+
+		bool hasEdge(typename std::vector<Lado<T> >::const_iterator otEdge){
+			#ifndef NDEBUG
+				assert(_vectorVertices.size()>=2);
+			#endif
+			otEdge=_vectorLado.begin();
+			for(otEdge; otEdge!=_vectorLado.end(); otEdge++){
+				if(otEdge==currEdge())
+					return true;
+			}
+			return false;
+		}
 
 		inline bool hasCurrVertex(){
 			if(has(it))
@@ -79,7 +94,7 @@ class Grafo : public ed::GrafoInterfaz{
 				return false;		
 		}
 
-		inline Vertice currVertex(){
+		inline Vertice<T> currVertex(){
 			#ifndef NDEBUG
 				assert(hasCurrVertex());
 			#endif
@@ -94,14 +109,14 @@ class Grafo : public ed::GrafoInterfaz{
 				return false;	
 		}
 		
-		inline Lado currEdge(){
+		inline Lado<T> currEdge(){
 			#ifndef NDEBUG
 				assert(hasCurrEdge());
 			#endif
 				return *itEdge;
 		}
 
-		int getLabelVertex(Vertice const &u) const {
+		int getLabelVertex(Vertice<T> const &u) const {
 			bool value=false;
 			unsigned int i;
 			for(i=0;i<(_label.size());i++){
@@ -116,21 +131,21 @@ class Grafo : public ed::GrafoInterfaz{
 		}
 
 		//! Modificadores públicos del grafo de la clase Grafo
-		inline void addVertex(double x, double y){
-		Punto <float> *punto = new Punto<float>(x,y);
-			Vertice vertice = new Vertice(punto, (_label.size())+1);
+		void addVertex(T x, T y){
+			Punto <float> *punto = new Punto<float>(x,y);
+			Vertice <T> *vertice = new Vertice <T>(punto, (_label.size())+1);
 			_vectorVertices.push_back(vertice);
 			setLabelVertex(_label.size()+1);
 			#ifndef NDEBUG
 				assert(this->hasCurrVertex());
-			#endif
+			#endif	
 		}
 
 		inline void setLabelVertex(int label){
 			_label.push_back(label);
 		}
 
-		inline void addEdge(Vertice &u, Vertice &v, Lado &lado, double coste){
+		void addEdge(Vertice<T> &u, Vertice<T> &v, Lado<T> &lado, double coste){
 			lado.setLadoName(getLabelVertex(u)+" "+	getLabelVertex(v));
 			lado.setFirstVertex(u);
 			lado.setSecondVertex(v);
@@ -140,13 +155,41 @@ class Grafo : public ed::GrafoInterfaz{
 
 			#ifndef NDEBUG
 				assert(this->hasCurrEdge());
-				assert(has(u) && has(v));
 				assert(coste>=0);
 			#endif
 		}
+		
 
-		void removeVertex();
-		void removeEdge();
+		//! Modificador públicos de la clase Grafo
+		/*
+			1. Si hay lados(bool adjacent) Se deben borrar sus lados por lo tanto primero se guardará el vertice en uno auxiliar, y mientras adjacent sea true se usará nextEdge() y currEdge y se borrará y se volverá al vertice con goToVertex
+			2. Se borra el vertice actual (NO EL AUXILIAR CREADO) osea un _vectorVertices.erase(*this) y se hace un nextVertex()
+			3. Borrar la etiqueta de ese vertice
+		*/
+		void removeVertex(){
+			#ifndef	NDEBUG
+				assert(hasCurrVertex());
+			#endif
+			do{
+				removeEdge();
+			}while(adjacent(currVertex(), nextVertex())==true); //Elimina todos los lados del vertice
+			_label.erase(currVertex().getLabelVertex());
+			_vectorVertices.erase(currVertex());
+			#ifndef	NDEBUG
+				assert(!hasCurrVertex());
+			#endif
+		}
+
+		void removeEdge(){
+			#ifndef	NDEBUG
+				assert(hasCurrEdge());
+			#endif
+			_vectorLado.erase(itEdge);
+			itEdge=nextEdge();
+			#ifndef	NDEBUG
+				assert(!hasCurrEdge());
+			#endif
+		}
 
 		inline void removeAllVertexAndEdges(){
 			_vectorLado.clear();
@@ -156,38 +199,113 @@ class Grafo : public ed::GrafoInterfaz{
 			#endif
 		}
 
-		//! Modificadores públicos de los cursores de la clase Grafo
-		
-		void findFirstVertex(double x, double y);
+		void findFirstVertex(T x, T y){
+			Punto <float> *punto = new Punto<float>(x,y);
+			typename std::vector<Vertice<T> >::const_iterator ot;
+			for(ot=_vectorVertices.begin(); ot!=_vectorVertices.end(); ot++){
+				if(punto==ot.getPunto())
+					it=ot;
+			}
+			#ifndef NDEBUG
+				assert(hasEdge(it));
+			#endif
+		}
 
-		void findNextVertex(double x, double y);
+		void findNextVertex(T x, T y){
+			Punto <float> *punto = new Punto<float>(x,y);
+			typename std::vector<Vertice<T> >::const_iterator ot;
+			for(ot=_vectorVertices.begin(); ot!=_vectorVertices.end(); ot++){
+				if(punto==ot.getPunto())
+					it=ot;
+			}
+			#ifndef NDEBUG
+				assert(hasEdge(it));
+			#endif
+		}
 
-		void findFirstEdge();
+		void findFirstEdge(float coste){
+			typename std::vector<Lado<T> >::const_iterator otEdge;
+			for(otEdge=_vectorLado.begin(); otEdge!=_vectorLado.end(); otEdge++){
+				if(coste==otEdge.getLadoCoste())
+					itEdge=otEdge;
+			}
+			#ifndef NDEBUG
+				assert(hasEdge(itEdge));
+			#endif
+		}
 
-		void findNextEdge();
+		void findNextEdge(float coste){
+			typename std::vector<Lado<T> >::const_iterator otEdge;
+			for(otEdge=_vectorLado.begin(); otEdge!=_vectorLado.end(); otEdge++){
+				if(coste==otEdge.getLadoCoste())
+					itEdge=otEdge;
+			}
+			#ifndef NDEBUG
+				assert(hasEdge(itEdge));
+			#endif
+		}
 
-		void goToVertex(Vertice const &vertice);
-		/*
-			Se puede recorrer el vector con un iterador y que busque si el vertice pasado por parámetro es igual al actual y si no que avance al siguiente
-		*/
+		void goToVertex(ed::Vertice<T> const &vertice){
+			it=_vectorVertices.at(vertice);
+			#ifndef NDEBUG
+				assert(std::abs((currVertex().getDataX())-(vertice.getDataX()))<COTA_ERROR && std::abs((currVertex().getDataY())-(vertice.getDataY()))<COTA_ERROR);
+			#endif
+		}
 
-		void goToEdge(Vertice const &u, Vertice const &v);
+		void goToEdge(ed::Vertice<T> const &u, ed::Vertice<T> const &v){
+			typename std::vector<Lado<T> >::const_iterator otEdge=_vectorLado.begin();
+			for(otEdge; otEdge != _vectorLado.end(); otEdge++){
+				if(otEdge.getFirstVertex() == u && otEdge.getSecondVertex() == v){
+					ed::Lado <T> *lado=new Lado<T>(otEdge.getLadoName(), u, v, otEdge.getLadoCoste());
+					itEdge=_vectorLado.at(lado);
+				}else if(otEdge.getSecondVertex() == u && otEdge.getFirstVertex() == v){
+					ed::Lado <T> *lado=new Lado<T>(otEdge.getLadoName(), v, u, otEdge.getLadoCoste());
+					itEdge=_vectorLado.at(lado);
+				}
+			}
+		}
 
-		void goToFirstVertex();
+		void goToFirstVertex(){
+			#ifndef NDEBUG
+				assert(has(_vectorVertices.begin()));
+				assert(!isEmpty());
+			#endif
+				it=_vectorVertices.begin();
+		}
 
-		void nextVertex();
+		void nextVertex(){
+			it++;
+			#ifndef NDEBUG
+				assert(has(it));
+			#endif
+		}
 
-		void goToFirstEdge();
+		void goToFirstEdge(){
+			#ifndef NDEBUG
+				assert(hasEdge(_vectorLado.begin()));
+				assert(_vectorVertices.size>=2);
+			#endif
+				itEdge=_vectorLado.begin();
+		}
 
-		void nextEdge();
-
+		void nextEdge(){
+			itEdge++;
+			#ifndef NDEBUG
+				assert(hasEdge(itEdge));
+			#endif
+		}
 	}; //Se cierra la clase Grafo
 	
 	//! Sobrecarga del operador de salida
-	ostream &operator<<(ostream &stream, ed::Vertice const &vertice);
+	//ostream &operator<<(ostream &stream, Vertice<T> const &vertice);
 
 	//! Sobrecarga del operador de entrada
-	istream &operator>>(istream &stream, ed::Vertice &vertice); 
+	//istream &operator>>(istream &stream, Vertice<T> &vertice); 
 
 } //Se cierra el espacio de nombres de la asignatura ED
+
+// MODELO DE COMPILACION POR INCLUSION
+
+#include "Grafo.cpp"
+
 #endif

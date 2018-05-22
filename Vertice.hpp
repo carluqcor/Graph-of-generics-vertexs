@@ -30,16 +30,19 @@ using std::ostream;
 // Se incluye la clase Vertice dentro del espacio de nombres de la asigantura: ed
 namespace ed{
 
+//!  Definición de la plantilla de la clase Punto
+template < class T > 
+
 //!  Definición de la clase Vertice
 class Vertice{
 	
 	private:
-		Punto<float> _punto;
-		unsigned int _label;
+		T _punto;
+		int _label;
 	
 	public:
 		//! Constructores públicos de la clase Vertice
-		inline Vertice(Punto<float> punto, unsigned int label=-1){
+		inline Vertice(T punto, int label){
 			setPunto(punto);
 			setLabel(label);
 		}
@@ -49,12 +52,12 @@ class Vertice{
 		}
 */
 		//! Observadores públicos de la clase Vertice
-		inline Punto<float> const getPunto() const {return _punto;} //Controlar asertos
+		inline T getPunto() const {return _punto;} //Controlar asertos
 
 		inline int getLabel() const {return _label;}
 
 		//! Modificadores públicos de la clase Vertice
-		inline void setPunto(Punto<float> &punto){
+		inline void setPunto(T &punto){
 			_punto=punto;
 		}
 
@@ -67,7 +70,7 @@ class Vertice{
 			_vertex=vertice;
 		}*/
 
-		inline Vertice &operator=(Vertice const &u){
+		inline Vertice<T> &operator=(Vertice<T> const &u){
 			return (*(this)=u);
 		}
 

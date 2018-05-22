@@ -15,7 +15,7 @@
 #include <stdlib.h>
 
 #include <vector>
-
+#include "funcionesAuxiliares.hpp"
 #include "Punto.hpp"
 #include "Vertice.hpp"
 #include "Lado.hpp"

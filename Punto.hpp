@@ -1,5 +1,8 @@
-/*! \par Fichero: Punto.hpp
-   Punto representa la clase punto del plano euclídeo definida mediante template (plantilla)
+/*! 
+   \file  Punto.hpp
+   \brief Fichero que contiene el código de las funciones de la clase Grafo
+   \author Carlos Luque Córdoba
+   \date   anywhere
 */
 #ifndef _PUNTO_HPP_
 #define _PUNTO_HPP_
@@ -15,6 +18,7 @@ namespace ed {
 
 //!  Definición de la plantilla de la clase Punto
 template < class T > 
+	
 class Punto{
   //! \name Atributos privados de la clase Punto
    private: 
@@ -129,7 +133,7 @@ class Punto{
 		\post      Ninguna
 		\sa        getX(), getY(), setX(), setY()
 	*/
-	inline Punto & operator=(Punto const &q)
+	inline Punto<T> & operator=(Punto const &q)
 	{
 		setX(q.getX());
 		setY(q.getY());
@@ -147,7 +151,21 @@ class Punto{
 		\warning Se deben teclear números del tipo T
 		\sa      setX(), setY()
 	*/
-	void leerPunto();
+	void leerPunto(){
+		T x, y;
+
+		std::cout << "\n Lectura de las coordenadas de un punto: P(x,y) " << std::endl;
+
+		std::cout << " Abscisa: x --> ";
+		std::cin >> x;
+
+		std::cout << " Ordenada: y --> ";
+		std::cin >> y;
+
+		// Se asignan los valores leídos a los atributos del punto   
+		setX(x);
+		setY(y);
+	}
 
 
 	/*! 
@@ -157,21 +175,14 @@ class Punto{
 		\post  Ninguna
 		\sa    getX(), getY()
 	*/
-	void escribirPunto();
+	void escribirPunto(){
+		std::cout << "(" << getX() << ", " << getY() << ")" << std::endl;
+	}
   
 }; // Fin de la definición de la clase Punto
 
 
 } // \brief Fin de namespace ed.
-
-//////////////////////////////////////////////////////////////////////////////////////
-
-// MODELO DE COMPILACION POR INCLUSION
-
-#include "Punto.cpp"
-
-///////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 //  _PUNTO_HPP_

@@ -17,60 +17,54 @@
 #include "Punto.hpp"
 #include "Vertice.hpp"
 
-#include <cmath>
-
-#define COTA_ERROR   1.0e-6 //!< Cota de error para la comparación de números reales
 
 // Se incluye la clase Fecha dentro del espacio de nombres de la asigantura: ed
 namespace ed{
 
+//!  Definición de la plantilla de la clase Grafo
+template < class T > 
+
 //!  Definición de la clase Lado
 class Lado{
-		std::string _name;
-		double _coste;
-		Vertice *_u;
-		Vertice *_v;
+	private:
+		float _coste;
+		Vertice<T> *_u;
+		Vertice<T> *_v;
 
 	public:
 		//! Constructor públicos de la clase Vertice
-		inline Lado(std::string name, Vertice &u, Vertice &v, double coste){
-			setLadoName(name);
+		inline Lado(Vertice<T> &u, Vertice<T> &v, float coste){
 			setLadoCoste(coste);
 			setFirstVertex(u);
 			setSecondVertex(v);
 		}
 
 		//! Observadores públicos de la clase Lado
-		inline std::string getLadoName() const {return _name;}
+		inline float getLadoCoste() const {return _coste;}
 
-		inline double getLadoCoste() const {return _coste;}
+		inline Vertice<T> const *getFirstVertex() const {return _u;}
 
-		inline Vertice const *getFirstVertex() const {return _u;}
-
-		inline Vertice const *getSecondVertex() const {return _v;}
+		inline Vertice<T> const *getSecondVertex() const {return _v;}
 
 	//	bool has(Vertice const &u);
 
-	//	Vertice const other(Vertice const &u);
+		inline Vertice<T> const other(Vertice<T> &u){
+			if(u==getFirstVertex())
+				return getSecondVertex();
+			else
+				return getFirstVertex();
+		}
 
 		//! Modificadores públicos de la clase Lado
-
-		inline void setLadoName(std::string name){
-			_name=name;
-		}
-
-		inline void setLadoCoste(double coste){
+		inline void setLadoCoste(float coste){
 			_coste=coste;
-			#ifndef NDEBUG
-				assert(std::abs(getLadoCoste()-coste)<COTA_ERROR);
-			#endif
 		}
 
-		inline void setFirstVertex(Vertice &u){
+		inline void setFirstVertex(Vertice<T> &u){
 			*_u=u;
 		}
 
-		inline void setSecondVertex(Vertice &v){
+		inline void setSecondVertex(Vertice<T> &v){
 			*_v=v;
 		}
 

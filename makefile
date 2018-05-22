@@ -6,7 +6,7 @@ OBJECTS = $(NAME).o funcionesAuxiliares.o Grafo.o Vertice.o Lado.o Punto.o
 #
 CPPFLAGS = -c -g -Wall -ansi -O2
 
-INCLUDES = funcionesAuxiliares.hpp Grafo.hpp Vertice.hpp Lado.hpp Punto.hpp macros.hpp
+INCLUDES = funcionesAuxiliares.hpp Grafo.hpp Vertice.hpp Lado.hpp Punto.hpp macros.hpp distancia.hpp
 
 # Macros predefinidas
 #
@@ -41,7 +41,7 @@ Punto.o: Punto.cpp Punto.hpp
 			@g++ $(CPPFLAGS) $<
 
 #
-Vertice.o: Vertice.cpp Vertice.hpp \ Punto.hpp 
+Vertice.o: Vertice.cpp Vertice.hpp Punto.hpp 
 			@echo "Compilando " $<
 			@g++ $(CPPFLAGS) $<
 
