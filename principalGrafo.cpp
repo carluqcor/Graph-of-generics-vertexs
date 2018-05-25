@@ -34,28 +34,33 @@
 
 int main(){
 	float dist;
+    unsigned int i=1;
 	ed::Punto <float> punto(3, 5);
     ed::Punto <float> punto2(2, 1);
-    ed::Vertice <ed::Punto<float> > Vertice1(punto, 0);
-    ed::Vertice <ed::Punto<float> > Vertice2(punto2, 0);
+    ed::Punto <float> punto3(4, 2);
+    ed::Vertice <ed::Punto<float> > Vertice1(-1);
+    ed::Vertice <ed::Punto<float> > Vertice2(-1);
+    ed::Vertice <ed::Punto<float> > Vertice3(-1);
+
+  //  unsigned int i, j;
 
     std::vector<ed::Vertice<ed::Punto<float> > > vectorVertices; //! Vector de Vertices de Puntos de la STL
-	
-	std::vector<std::vector<int> > matriz;
 
 	std::vector<ed::Lado<ed::Punto<float> > >  vectorLado; //! Vector Lados de Puntos de la STL
 
-    ed::Grafo <ed::Punto<float> > graph(vectorVertices, vectorLado, matriz);
+    ed::Grafo <ed::Punto<float> > graph(vectorVertices, vectorLado);
 
-    punto.escribirPunto();
-    punto2.escribirPunto();
+    std::vector<std::vector<float> > matriz;
+
+    graph.addVertex(punto, Vertice1);
+    graph.addVertex(punto2, Vertice2);
+    graph.addVertex(punto3, Vertice3);
+
+    i++;
+    i++;
+    i++;
 
     dist=ed::calcularDistanciaEuclidea(punto.getX(), punto.getY(), punto2.getX(), punto2.getY());
-
-    std::cout<<"Distancia: "<<dist<<std::endl;
-
-    Vertice2.setPunto(punto2);
-    Vertice2.setLabel(1);
 
     (Vertice1.getPunto()).escribirPunto();
     std::cout<<"Label: "<<Vertice1.getLabel()<<std::endl;
@@ -63,16 +68,23 @@ int main(){
     (Vertice2.getPunto()).escribirPunto();
     std::cout<<"Label2: "<<Vertice2.getLabel()<<std::endl;
 
-    ed::Lado <ed::Punto<float> >  edge(Vertice1, Vertice2, dist);
+    (Vertice3.getPunto()).escribirPunto();
+    std::cout<<"Label3: "<<Vertice3.getLabel()<<std::endl;
 
-	std::cout<<"First: ";
-    (edge.getFirstVertex()->getPunto()).escribirPunto();
-    std::cout<<std::endl;
-    std::cout<<"Second: ";
-    (edge.getSecondVertex()->getPunto()).escribirPunto();
-    std::cout<<std::endl;
-    std::cout<<"Coste: %f",edge.getLadoCoste();
-    std::cout<<std::endl;
+    ed::Lado <ed::Punto<float> > edge(dist);
+    graph.addEdge(Vertice1.getLabel(), Vertice2.getLabel(), edge, dist);
+
+    edge.imprimirLado();
+
+    dist=ed::calcularDistanciaEuclidea(punto2.getX(), punto2.getY(), punto3.getX(), punto3.getY());
+
+    ed::Lado <ed::Punto<float> > edge1(Vertice2.getLabel(), Vertice3.getLabel(), dist);
+
+	edge1.imprimirLado();
+
+    matriz=graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1);
+
+    graph.imprimirMatriz(graph.getVectorVertices(), matriz, graph.getVectorEtiquetas().size()+1);
+    ed::prim(graph);
+
 }
-
-

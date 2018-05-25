@@ -8,6 +8,11 @@
 #ifndef _FuncionesAuxiliares_HPP_
 #define _FuncionesAuxiliares_HPP_
 
+#include "macros.hpp"
+#include "distancia.hpp"
+#include "Punto.hpp"
+#include "Vertice.hpp"
+#include "Lado.hpp"
 #include "Grafo.hpp"
 
 /*!	
@@ -21,7 +26,10 @@ namespace ed{
 	*/
  	int menu();
 
+	
+	void printPrim();
 
+  	void prim(Grafo <Punto<float> > graphT);
 
 } // Fin del espacio de nombre de la asignatura: ed
 

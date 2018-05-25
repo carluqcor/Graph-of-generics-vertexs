@@ -14,14 +14,7 @@
 // Para controlar las precondiciones y postcondiciones mediante asertos
 #include <cassert>
 
-// Abs para cotas de error de numeros reales positivos
-#include <cmath>
-
 #include "Punto.hpp"
-
-
-#define COTA_ERROR   1.0e-6 //!< Cota de error para la comparación de números reales
-
 
 // Para la sobrecarga de los operadores de flujo: << y >>
 using std::istream;
@@ -29,7 +22,6 @@ using std::ostream;
 
 // Se incluye la clase Vertice dentro del espacio de nombres de la asigantura: ed
 namespace ed{
-
 //!  Definición de la plantilla de la clase Punto
 template < class T > 
 
@@ -46,34 +38,41 @@ class Vertice{
 			setPunto(punto);
 			setLabel(label);
 		}
-/*
-		inline Vertice(Vertice &vertice){
-			setVertice(vertice);
+
+		inline Vertice(int label){
+			setLabel(label);
 		}
-*/
+
+	//	inline Vertice(Vertice<T> const &vertice){
+	//		setPunto(vertice.getPunto());
+	//		setLabel(vertice.getLabel());
+	//	}
+
 		//! Observadores públicos de la clase Vertice
 		inline T getPunto() const {return _punto;} //Controlar asertos
 
-		inline int getLabel() const {return _label;}
+		inline int const getLabel() const {return _label;}
 
 		//! Modificadores públicos de la clase Vertice
-		inline void setPunto(T &punto){
+		inline void setPunto(T const &punto){
 			_punto=punto;
 		}
 
-		inline void setLabel(int label){
+		inline void setLabel(int const label){
 			_label=label;
 		}
-
-
-		/*inline void setVertice(Vertice &vertice){
-			_vertex=vertice;
-		}*/
 
 		inline Vertice<T> &operator=(Vertice<T> const &u){
 			return (*(this)=u);
 		}
 
+
+		inline bool const &operator==(Vertice<T> const &u){
+			if(*this==u)
+				return true;
+			else
+				return false;
+		}
 
 
 	}; //Se cierra la clase Vertice

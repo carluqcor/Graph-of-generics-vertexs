@@ -13,9 +13,13 @@
 #include <string>
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <limits.h>
 
 #include <vector>
 #include "funcionesAuxiliares.hpp"
+#include "macros.hpp"
+#include "distancia.hpp"
 #include "Punto.hpp"
 #include "Vertice.hpp"
 #include "Lado.hpp"
@@ -109,4 +113,81 @@ int ed::menu(){
     std::cin.ignore();
 
 	return opcion;
+}
+
+// Function to construct and print MST for a graph represented using adjacency
+// matrix representation
+void ed::prim(ed::Grafo <ed::Punto<float> > graphT){
+    matriz=graphT.crearMatriz(graphT.getVectorVertices(), graphT.getVectorLado(), graphT.getVectorEtiquetas().size()+1);
+	int label, flag, visited[],i,j,k,l;
+	std::cout<<"\n ¿Por qué vertice empezamos el algoritmo? (Introduzca la etiqueta del vertice): ";
+	std::cin>>label;
+	std::endl;
+	int min=graphT.getPeso();
+	int from=graphT.getFrom();
+	int to=graphT.getTo();
+
+	//search whether graph contains x
+	flag = 0;
+	for(i =0; i<n; i++){
+		if(graphT.getVectorVertices()[i].getLabel() == label){
+			flag = 1;
+		}
+	}
+
+	if(flag == 0){
+		cout<<"\n No es un vertice válido ";
+		return;//terminate the fn
+	}
+
+	//i contains index of start vertex
+	//mark i as visited, representing that i is a node of tree
+	visited[graphT.getVectorVertices()[i].getLabel()] = 1;
+
+	//MST MUST HAVE ALL VERTICES OF GRAPH
+	for(i =0; i< n-1; i++){
+		min = 999;//infinite
+
+		for(j = 0; j < v; j++){ //from the visited list i.e. from the tree 
+			//FETCH A CURRENT VERTEX FROM MST
+			current = visited[graphT.getVectorVertices()[i].getLabel()];
+
+			//FOR THE CURRENT VERTEX FIND UNVISITED EDGE WITH MINIMUM WEIGHT
+				for(k = 0; k< n; k++){
+					if(matriz[current+1][k+1] != 999){//an edge exists
+
+						//if k is not visited
+
+						flag =0; //not found
+						for(l =0 ; l< v; l++){
+							if(visited[l]== k){
+								flag = 1;//found
+							}
+						}
+
+						if(flag == 0){ //unvisited k
+							wt= matriz[current+1][k+1];
+						if(wt < min){
+							min =wt;
+							from = current;
+							to = k;
+						}
+					}//if flag == 0
+				}//if matriz[current][k] != 999
+			}//for k
+		}//for j
+
+		//ADD IT AS A NODE IN TREE
+		graphT.setFrom()
+		graphT.setTo();
+		graphT.setPeso();
+		mstIndx++;
+
+		//mark to as visited, representing that to is a node of tree
+		visited[v] = to;
+		v++;
+
+	} //for i
+
+	printPrim();
 }
