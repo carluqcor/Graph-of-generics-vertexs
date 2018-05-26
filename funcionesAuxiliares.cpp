@@ -115,7 +115,7 @@ int ed::menu(){
 	return opcion;
 }
 
-void ed::añadirVertices(std::string const & nombreFichero, std::string const & nombreFichero2, ed::Grafo <ed::Punto<float> > graph(std::vector<Vertice<T> > v, std::vector<Lado<T> > l)){
+/*void ed::añadirVertices(std::string const & nombreFichero, std::string const & nombreFichero2, ed::Grafo <ed::Punto<float> > graph(std::vector<Vertice<T> > v, std::vector<Lado<T> > l)){
 	std::ifstream grap, grap2;
 	bool value, value2;
 	ed::Punto<float> punto;
@@ -145,7 +145,7 @@ void ed::añadirVertices(std::string const & nombreFichero, std::string const & 
 	else
 		std::cout<<BIRED<<"Error al cargar el fichero"<<RESET<<std::endl;
 }
-
+*/
 // Function to construct and print MST for a graph represented using adjacency
 // matrix representation
 void ed::prim(ed::Grafo <ed::Punto<float> > graphT){

@@ -38,9 +38,11 @@ int main(){
 	ed::Punto <float> punto(3, 5);
     ed::Punto <float> punto2(2, 1);
     ed::Punto <float> punto3(4, 2);
+    ed::Punto <float> punto4(10, 7);
     ed::Vertice <ed::Punto<float> > Vertice1(-1);
     ed::Vertice <ed::Punto<float> > Vertice2(-1);
     ed::Vertice <ed::Punto<float> > Vertice3(-1);
+    ed::Vertice <ed::Punto<float> > Vertice4(-1);
 
   //  unsigned int i, j;
 
@@ -55,7 +57,9 @@ int main(){
     graph.addVertex(punto, Vertice1);
     graph.addVertex(punto2, Vertice2);
     graph.addVertex(punto3, Vertice3);
+    graph.addVertex(punto4, Vertice4);
 
+    i++;
     i++;
     i++;
     i++;
@@ -66,10 +70,13 @@ int main(){
     std::cout<<"Label: "<<Vertice1.getLabel()<<std::endl;
 
     (Vertice2.getPunto()).escribirPunto();
-    std::cout<<"Label2: "<<Vertice2.getLabel()<<std::endl;
+    std::cout<<"Label 2: "<<Vertice2.getLabel()<<std::endl;
 
     (Vertice3.getPunto()).escribirPunto();
-    std::cout<<"Label3: "<<Vertice3.getLabel()<<std::endl;
+    std::cout<<"Label 3: "<<Vertice3.getLabel()<<std::endl;
+
+    (Vertice4.getPunto()).escribirPunto();
+    std::cout<<"Label 4: "<<Vertice4.getLabel()<<std::endl;
 
     ed::Lado <ed::Punto<float> > edge(dist);
     graph.addEdge(Vertice1.getLabel(), Vertice2.getLabel(), edge, dist);
@@ -90,6 +97,15 @@ int main(){
     graph.addEdge(Vertice1.getLabel(), Vertice3.getLabel(), edge2, dist);
 
     edge2.imprimirLado();
+
+
+    dist=ed::calcularDistanciaEuclidea(punto3.getX(), punto3.getY(), punto4.getX(), punto4.getY());
+
+    ed::Lado <ed::Punto<float> > edge3(dist);
+
+    graph.addEdge(Vertice3.getLabel(), Vertice4.getLabel(), edge3, dist);
+
+    edge3.imprimirLado();
 
     matriz=graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1);
 
