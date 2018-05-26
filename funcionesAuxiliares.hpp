@@ -26,9 +26,6 @@ namespace ed{
 	*/
  	int menu();
 
-	
-	void printPrim();
-
   	void prim(Grafo <Punto<float> > graphT);
 
 } // Fin del espacio de nombre de la asignatura: ed

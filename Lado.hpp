@@ -39,6 +39,11 @@ class Lado{
 			setSecondVertex(labelv2);
 		}
 
+		inline Lado(int labelv1, int labelv2){
+			setFirstVertex(labelv1);
+			setSecondVertex(labelv2);
+		}
+
 		inline Lado(float coste){
 			setLadoCoste(coste);
 		}
@@ -55,8 +60,9 @@ class Lado{
 		inline int const other(int const labelv1){
 			if(labelv1==getFirstVertex())
 				return getSecondVertex();
-			else
+			else if(labelv1==getSecondVertex())
 				return getFirstVertex();
+			return 0;
 		}
 
 		//! Modificadores públicos de la clase Lado

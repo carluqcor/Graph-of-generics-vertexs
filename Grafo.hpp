@@ -48,9 +48,9 @@ class Grafo{
 		
 		std::vector<int>_label;
 
-		int _from;
-		int _to;
-		int _peso;
+		std::vector<int> _from;
+		std::vector<int> _to;
+		std::vector<float> _peso;
 
 	public:
 		//! Constructores de la clase Grafo
@@ -68,14 +68,13 @@ class Grafo{
 				return false;
 		}
 
-		bool adjacent(Vertice <T> const &u, Vertice <T> const &v){
-			typename std::vector<Lado<T> >::iterator otEdge;
-			for(otEdge=_vectorLado.begin();otEdge!=_vectorLado.end();otEdge++){
-				if((otEdge->getFirstVertex())==(v.getLabel()) && (otEdge->getSecondVertex())==(u.getLabel()))
-					return true;
-				else if((otEdge->getFirstVertex())==(u.getLabel()) && (otEdge->getSecondVertex())==(v.getLabel()))
-					return true;
-			}
+		bool adjacent(int const u, int const v, std::vector<Lado<T> > l){
+			typename std::vector<Lado<T> >::const_iterator otEdge;
+				for(otEdge=l.begin();otEdge!=l.end();otEdge++){
+					if((otEdge->getFirstVertex()==v && otEdge->getSecondVertex()==u) || (otEdge->getFirstVertex()==u && otEdge->getSecondVertex()==v)){
+						return true;
+					}
+				}
 				return false;
 		}
 
@@ -100,6 +99,17 @@ class Grafo{
 					return true;
 			}
 			return false;
+		}
+
+		float getVectorCoste(std::vector<Lado<T> >l, int u, int v){
+			typename std::vector<Lado<T> >::iterator otEdge;
+			for(otEdge=_vectorLado.begin();otEdge!=_vectorLado.end();otEdge++){
+				if((otEdge->other(u)==v))
+					return otEdge->getLadoCoste();
+				else if((otEdge->other(v)==u))
+					return otEdge->getLadoCoste();
+			}
+			return 0;
 		}
 
 		inline bool hasCurrVertex(){
@@ -151,12 +161,18 @@ class Grafo{
     				Vector2[y][0]=v[y-1].getLabel();
     				Vector2[0][y]=v[y-1].getLabel();
        			for(unsigned int x=1;x<i;x++){
-	       			if(adjacent(v[y-1], v[x])){
-	            		Vector2[y][x]=1;
-	            		//Vector2[y][x]=(l[y-1].getLadoCoste());
-	            		//std::cout<<"Hola"<<std::endl;
-	            		//std::cout<<v[y-1].getLabel()<<"\t"<<(l[y-1].getLadoCoste())<<std::endl;
-	            	}
+	       			if(Vector2[y][x] == 0 || Vector2[y][x] ==0){	
+	       				if(y==x){
+       						Vector2[y][x]=0;
+	       				}else{
+		       				if(i-x!=0){
+				       			if(adjacent(v[y-1].getLabel(), v[x-1].getLabel(), l)){
+					            	Vector2[y][x]=getVectorCoste(l, v[y-1].getLabel(), v[x-1].getLabel());
+					            	Vector2[x][y]=getVectorCoste(l, v[y-1].getLabel(), v[x-1].getLabel());
+				            	}
+					        }
+					    }
+				    }
        			}
     		}
     		return Vector2;
@@ -168,13 +184,13 @@ class Grafo{
 		
 		std::vector<int> getVectorEtiquetas(){return _label;}
 
-		inline int getFrom(){return _from;}
-		inline int getTo(){return _to;}
-		inline int getPeso(){return _peso;}
+		inline std::vector<int> getFrom(){return _from;}
+		inline std::vector<int> getTo(){return _to;}
+		inline std::vector<float> getPeso(){return _peso;}
 
-		inline void setFrom(int from){_from=from;}
-		inline void setTo(int to){_to=to;}
-		inline void setPeso(int peso){_peso=peso;}
+		inline void setFrom(int from){_from.push_back(from);}
+		inline void setTo(int to){_to.push_back(to);}
+		inline void setPeso(float peso){_peso.push_back(peso);}
 
 		//! Modificadores públicos del grafo de la clase Grafo
 		void addVertex(T const punto, Vertice<T> &v){
@@ -252,7 +268,6 @@ class Grafo{
     		std::cout<<std::endl;
 		}
 
-		
 		//! Modificadores del cursor público de la clase Grafo
 		void findFirstVertex(T x, T y){
 			Punto <float> *punto = new Punto<float>(x,y);
@@ -349,7 +364,7 @@ class Grafo{
 	}; //Se cierra la clase Grafo
 	
 	//! Sobrecarga del operador de salida
-	//ostream &operator<<(ostream &stream, Vertice<T> const &vertice);
+	//ostream &operator<<(ostream &stream, Vertice<T>  const &vertice){
 
 	//! Sobrecarga del operador de entrada
 	//istream &operator>>(istream &stream, Vertice<T> &vertice); 

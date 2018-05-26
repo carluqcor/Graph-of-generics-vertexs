@@ -78,13 +78,21 @@ int main(){
 
     dist=ed::calcularDistanciaEuclidea(punto2.getX(), punto2.getY(), punto3.getX(), punto3.getY());
 
-    ed::Lado <ed::Punto<float> > edge1(Vertice2.getLabel(), Vertice3.getLabel(), dist);
+    ed::Lado <ed::Punto<float> > edge1(dist);
+    graph.addEdge(Vertice2.getLabel(), Vertice3.getLabel(), edge1, dist);
 
 	edge1.imprimirLado();
+
+    dist=ed::calcularDistanciaEuclidea(punto.getX(), punto.getY(), punto3.getX(), punto3.getY());
+
+    ed::Lado <ed::Punto<float> > edge2(dist);
+
+    graph.addEdge(Vertice1.getLabel(), Vertice3.getLabel(), edge2, dist);
+
+    edge2.imprimirLado();
 
     matriz=graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1);
 
     graph.imprimirMatriz(graph.getVectorVertices(), matriz, graph.getVectorEtiquetas().size()+1);
     ed::prim(graph);
-
 }
