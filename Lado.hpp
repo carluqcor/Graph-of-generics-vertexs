@@ -79,7 +79,7 @@ class Lado{
 		}
 
 		inline bool const &operator==(Lado<T> const &u){
-			if(*this==u)
+			if(*(this)==u)
 				return true;
 			else
 				return false;

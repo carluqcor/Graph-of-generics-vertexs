@@ -1,9 +1,9 @@
 /*!
-    \file principalGrafo.cpp
-    \brief Programa principal de la práctica 4 de ED: Grafo Abarcador de coste mínimo
-    \author Carlos Luque Córdoba
-    \date   anywhere
-    \version 1.0
+	\file principalGrafo.cpp
+	\brief Programa principal de la práctica 4 de ED: Grafo Abarcador de coste mínimo
+	\author Carlos Luque Córdoba
+  	\date   anywhere
+	\version 1.0
 */
 
 /*!
@@ -14,9 +14,9 @@
 */
 
 // Para los flujos de entrada y salida y para usar locale
-#include <cstdlib>
 #include <iostream>
 #include <string>
+
 #include <vector>
 
 #include "macros.hpp"
@@ -28,35 +28,33 @@
 #include "funcionesAuxiliares.hpp"
 
 /*! 
-    \brief   Programa principal de la práctica 4: Grafo Abarcador de coste mínimo
-    \return  int
+	\brief   Programa principal de la práctica 4: Grafo Abarcador de coste mínimo
+	\return  int
 */
+
 int main(){
-    float dist;
+	float dist;
     unsigned int i=1;
-    std::string nombreFichero;
-    std::getline(std::cin,nombreFichero);
-    
-    ed::Punto <float> punto(0.0, 0.0);
-    ed::Punto <float> punto2(0.0, 1.0);
-    ed::Punto <float> punto3(3.0, 1.0);
-    ed::Punto <float> punto4(3.0, 3.0);
-    ed::Punto <float> punto5(8.0, 1.0);
+    ed::Punto <float> punto(0, 0);
+    ed::Punto <float> punto2(0, 1);
+    ed::Punto <float> punto3(1, 0);
+    ed::Punto <float> punto4(2, 0);
+    ed::Punto <float> punto5(0, 2);
     ed::Vertice <ed::Punto<float> > Vertice1(-1);
     ed::Vertice <ed::Punto<float> > Vertice2(-1);
     ed::Vertice <ed::Punto<float> > Vertice3(-1);
     ed::Vertice <ed::Punto<float> > Vertice4(-1);
     ed::Vertice <ed::Punto<float> > Vertice5(-1);
-    
-    //  unsigned int i, j;
+    std::string nombreFichero;
+    nombreFichero="grafo.dot";
+
+  //  unsigned int i, j;
 
     std::vector<ed::Vertice<ed::Punto<float> > > vectorVertices; //! Vector de Vertices de Puntos de la STL
 
     std::vector<ed::Lado<ed::Punto<float> > >  vectorLado; //! Vector Lados de Puntos de la STL
 
     ed::Grafo <ed::Punto<float> > graph(vectorVertices, vectorLado);
-
-    //añadirVertices(nombreFichero, graph);
 
     std::vector<std::vector<float> > matriz;
 
@@ -166,15 +164,10 @@ int main(){
 
     edge9.imprimirLado();
 
+
+
     matriz=graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1);
 
     graph.imprimirMatriz(graph.getVectorVertices(), matriz, graph.getVectorEtiquetas().size()+1);
-
-    matriz=graph.prim();
-
-    graph.imprimirMatrizSinLabels(graph.getVectorVertices(), matriz);
-
-    matriz=graph.kruskal();
-
-    graph.imprimirMatrizSinLabels(graph.getVectorVertices(), matriz);
+    ed::prim(graph);
 }

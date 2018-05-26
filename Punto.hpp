@@ -9,6 +9,7 @@
 
 // Facilita la entrada y salida 
 #include <iostream>
+#include <fstream>
 
 // 
 using std::ostream;
@@ -180,8 +181,17 @@ class Punto{
 	}
   
 }; // Fin de la definición de la clase Punto
+/*template < class T > 
+	//! Sobrecarga del operador de salida
+	istream &operator>>(istream &stream, T &punto){
+		std::string f;
+		std::getline(stream, f, ' ');
+		punto.setX(atof(f.c_str()));
 
-
+		std::getline(stream, f, ' ');
+		punto.setYres(atof(f.c_str()));
+		return stream;
+*/
 } // \brief Fin de namespace ed.
 
 

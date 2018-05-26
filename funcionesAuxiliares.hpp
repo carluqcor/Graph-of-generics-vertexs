@@ -8,6 +8,13 @@
 #ifndef _FuncionesAuxiliares_HPP_
 #define _FuncionesAuxiliares_HPP_
 
+#include <cstdlib>
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
 #include "macros.hpp"
 #include "distancia.hpp"
 #include "Punto.hpp"
@@ -26,7 +33,8 @@ namespace ed{
 	*/
  	int menu();
 
-  	void prim(Grafo <Punto<float> > graphT);
+ 	int anadirVertices(std::string const & nombreFichero, Grafo <Punto<float> > graph);
+
 
 } // Fin del espacio de nombre de la asignatura: ed
 

@@ -16,11 +16,15 @@
 
 #include <limits>
 
+#include <fstream>
+
+#include <stdio.h>
+
 #include <vector>
 
+#include "Punto.hpp"
 #include "Lado.hpp"
 #include "Vertice.hpp"
-#include "Punto.hpp"
 #include "macros.hpp"
 
 
@@ -57,9 +61,8 @@ class Grafo{
 		inline Grafo(std::vector<Vertice<T> >v, std::vector<Lado<T> >l){
 			_vectorVertices=v;
 			_vectorLado=l;
-		//	_matriz=matriz;
 		}
-		
+
 		//! Observadores públicos de la clase Grafo
 		inline bool isEmpty(){
 			if(_vectorVertices.size()==0)
@@ -155,6 +158,88 @@ class Grafo{
 			return _label.at(u.getLabel());
 		}
 
+		std::vector< std::vector<float> > prim(){
+			// uso una copia de ady porque necesito eliminar columnas
+			unsigned int nVertices=getVectorVertices().size();
+			std::vector< std::vector<float> > adyacencia = crearMatrizSinLabels(getVectorVertices(), getVectorLado());
+			std::vector< std::vector<float> > arbol(nVertices);
+			std::vector<float> markedLines;
+			std::vector<float> :: iterator itVec;
+
+			// Inicializo las distancias del arbol en INF.
+			for(unsigned int i = 0; i < nVertices; i++)
+			    arbol[i] = std::vector<float> (nVertices, 0);
+
+			int padre = 0;
+			int hijo = 0;
+			while(markedLines.size() + 1 < nVertices){
+			    padre = hijo;
+			    // Marco la fila y elimino la columna del nodo padre.
+			    markedLines.push_back(padre);
+			    for(unsigned int i = 0; i < nVertices; i++)
+			        adyacencia[i][padre] = 999;
+
+			    // Encuentro la menor distancia entre las filas marcadas.
+			    // El nodo padre es la linea marcada y el nodo hijo es la columna del minimo.
+			    int min = 999;
+			    for(itVec = markedLines.begin(); itVec != markedLines.end(); itVec++)
+			        for(unsigned int i = 0; i < nVertices; i++)
+			            if(min > adyacencia[*itVec][i]){
+			                min = adyacencia[*itVec][i];
+			                padre = *itVec;
+			                hijo = i;
+			            }
+
+			    arbol[padre][hijo] = min;
+			    arbol[hijo][padre] = min;
+			}
+			return arbol;
+		}
+
+		// Devuelve la matriz de adyacencia del árbol mínimo.
+		std::vector<std::vector<float> > kruskal(){
+		    std::vector< std::vector<float> > adyacencia = crearMatrizSinLabels(getVectorVertices(), getVectorLado());
+		    int nVertices=getVectorVertices().size();
+		    std::vector< std::vector<float> > arbol(nVertices);
+		    std::vector<float> visitado(nVertices); // Indica el que nodo ha sido visitado
+
+		    for(int i = 0; i < nVertices; i++){
+		        arbol[i] =std::vector<float> (nVertices, 0);
+		        visitado[i] = i;
+		    }
+
+		    float Vertice1=0;
+		    float Vertice2=0;
+		    float arcos = 1; // Atributo para controlar los ciclos
+		    while(arcos < nVertices){
+		        //Con este while buscamos el camino mínimo sin tener un ciclo
+		        float min = 9999; //Infinito para los lados no visitados
+		        for(int i = 0; i < nVertices; i++)
+		            for(int j = 0; j < nVertices; j++)
+		                if(min > adyacencia[i][j] && adyacencia[i][j]!=0 && visitado[i] != visitado[j]){
+		                    min = adyacencia[i][j];
+		                    Vertice1 = i;
+		                    Vertice2 = j;
+		                }
+
+		        // Si los nodos no visitadon al mismo árbol agrego el arco al árbol mínimo.
+		        if(visitado[Vertice1] != visitado[Vertice2]){
+		            arbol[Vertice1][Vertice2] = min;
+		            arbol[Vertice2][Vertice1] = min;
+
+		            // Todos los nodos del árbol del Vertice2 ahora visitadon al árbol del Vertice1.
+		        	float temp = visitado[Vertice2];
+		        	visitado[Vertice2] = visitado[Vertice1];
+		        	for(int k = 0; k < nVertices; k++)
+		        		if(visitado[k] == temp)
+		        			visitado[k] = visitado[Vertice1];
+
+		            arcos++;
+		        }
+		    }
+		    return arbol;
+		}
+
 		std::vector<std::vector<float> > crearMatriz(std::vector<Vertice<T> >v, std::vector<Lado<T> >l, unsigned int i){
 			std::vector<std::vector<float> > Vector2 ( i, std::vector<float> (i));
     		for(unsigned int y=1;y<i;y++){
@@ -178,11 +263,44 @@ class Grafo{
     		return Vector2;
 		}
 
+		std::vector<std::vector<float> > crearMatrizSinLabels(std::vector<Vertice<T> >v, std::vector<Lado<T> >l){
+			std::vector<std::vector<float> > Vector2 ( v.size(), std::vector<float> (v.size()));
+    		for(unsigned int y=0;y<v.size();y++){
+       			for(unsigned int x=0;x<v.size();x++){
+	       			if(Vector2[y][x] == 0 || Vector2[y][x] ==0){	
+	       				if(y==x){
+       						Vector2[y][x]=0;
+	       				}else{
+				       		if(adjacent(v[y].getLabel(), v[x].getLabel(), l)){
+					           	Vector2[y][x]=getVectorCoste(l, v[y].getLabel(), v[x].getLabel());
+					           	Vector2[x][y]=getVectorCoste(l, v[y].getLabel(), v[x].getLabel());
+				            }
+					    }
+				    }
+       			}
+    		}
+    		return Vector2;
+		}
+
+		void crearGrafo(std::vector<Lado<T> >l, std::string const & nombreFichero){
+			std::ifstream grap;
+			grap.open(nombreFichero.c_str());
+			if(grap.is_open()){
+				for(itEdge=l.begin();itEdge!=l.end();itEdge++){
+					fprintf(grap, "%d -> %d [label=\"%f\"]",itEdge->getFirstVertex(), itEdge->getSecondVertex(), itEdge->getLadoCoste());
+				}
+				grap.close();
+			}
+		}
+
 		std::vector<Vertice<T> > getVectorVertices(){return _vectorVertices;}
 
 		std::vector<Lado<T> > getVectorLado(){return _vectorLado;}
 		
 		std::vector<int> getVectorEtiquetas(){return _label;}
+
+	//	typename std::vector<Vertice<T> >::iterator getIteradorVertice(){return *it;}
+		typename std::vector<Lado<T> >::iterator getIteradorLado(){return itEdge;}
 
 		inline std::vector<int> getFrom(){return _from;}
 		inline std::vector<int> getTo(){return _to;}
@@ -268,6 +386,17 @@ class Grafo{
     		std::cout<<std::endl;
 		}
 
+		void imprimirMatrizSinLabels(std::vector<Vertice<T> > v, std::vector<std::vector<float> > v2){
+    		for(unsigned int y=0;y<v.size();y++){
+       			for(unsigned int x=0;x<v.size();x++){
+            		std::cout<<BIBLUE<<v2[y][x]<<RESET<<"\t";
+       			}
+       			std::cout<<std::endl;
+    		}
+    		std::cout<<std::endl;
+		}
+
+
 		//! Modificadores del cursor público de la clase Grafo
 		void findFirstVertex(T x, T y){
 			Punto <float> *punto = new Punto<float>(x,y);
@@ -304,15 +433,32 @@ class Grafo{
 			#endif
 		}
 
-		void findNextEdge(float coste){
+		float findNextEdge(float coste){
 			typename std::vector<Lado<T> >::const_iterator otEdge;
 			for(otEdge=_vectorLado.begin(); otEdge!=_vectorLado.end(); otEdge++){
-				if(coste==otEdge.getLadoCoste())
-					itEdge=otEdge;
+				if(otEdge->getLadoCoste()<coste)
+					coste=otEdge->getLadoCoste();
 			}
-			#ifndef NDEBUG
-				assert(hasEdge(itEdge));
-			#endif
+			std::cout<<"COSTES: "<<coste<<std::endl;
+			return coste;
+		//	#ifndef NDEBUG
+		//		assert(hasEdge(*itEdge));
+		//	#endif
+		}
+
+		int findNextLabel(float coste, int label){
+			typename std::vector<Lado<T> >::const_iterator otEdge;
+			for(otEdge=_vectorLado.begin(); otEdge!=_vectorLado.end(); otEdge++){
+				std::cout<<"COSTE Lado: "<<otEdge->getLadoCoste()<<" Coste: "<<coste<<" ETIQUETA 1: "<<otEdge->getFirstVertex()<<" ETIQUETA 2: "<<otEdge->getSecondVertex()<<" Etiqueta label: "<<label<<std::endl;
+				if(otEdge->getLadoCoste()==coste && (otEdge->getFirstVertex()==label)){
+					std::cout<<"otEdge1: "<<otEdge->getFirstVertex()<<std::endl;
+					return otEdge->getSecondVertex();
+				}else if(otEdge->getLadoCoste()==coste && (otEdge->getSecondVertex()==label)){
+					std::cout<<"otEdge2: "<<otEdge->getSecondVertex()<<std::endl;
+					return otEdge->getFirstVertex();
+				}
+			}
+			return 0;
 		}
 
 		void goToVertex(ed::Vertice<T> const &vertice){

@@ -1,9 +1,9 @@
 /*!
-    \file principalGrafo.cpp
-    \brief Programa principal de la práctica 4 de ED: Grafo Abarcador de coste mínimo
-    \author Carlos Luque Córdoba
-    \date   anywhere
-    \version 1.0
+	\file principalGrafo.cpp
+	\brief Programa principal de la práctica 4 de ED: Grafo Abarcador de coste mínimo
+	\author Carlos Luque Córdoba
+  	\date   anywhere
+	\version 1.0
 */
 
 /*!
@@ -25,28 +25,29 @@
 #include "Vertice.hpp"
 #include "Lado.hpp"
 #include "Grafo.hpp"
+#include "kruskal.hpp"
 #include "funcionesAuxiliares.hpp"
 
 /*! 
-    \brief   Programa principal de la práctica 4: Grafo Abarcador de coste mínimo
-    \return  int
+	\brief   Programa principal de la práctica 4: Grafo Abarcador de coste mínimo
+	\return  int
 */
 int main(){
-    float dist;
+	float dist;
     unsigned int i=1;
     std::string nombreFichero;
     std::getline(std::cin,nombreFichero);
     
-    ed::Punto <float> punto(0.0, 0.0);
-    ed::Punto <float> punto2(0.0, 1.0);
-    ed::Punto <float> punto3(3.0, 1.0);
-    ed::Punto <float> punto4(3.0, 3.0);
-    ed::Punto <float> punto5(8.0, 1.0);
-    ed::Vertice <ed::Punto<float> > Vertice1(-1);
-    ed::Vertice <ed::Punto<float> > Vertice2(-1);
-    ed::Vertice <ed::Punto<float> > Vertice3(-1);
-    ed::Vertice <ed::Punto<float> > Vertice4(-1);
-    ed::Vertice <ed::Punto<float> > Vertice5(-1);
+    //ed::Punto <float> punto(0.0, 0.0);
+    //ed::Punto <float> punto2(0.0, 1.0);
+    //ed::Punto <float> punto3(3.0, 1.0);
+    //ed::Punto <float> punto4(3.0, 3.0);
+    //ed::Punto <float> punto5(8.0, 1.0);
+    //ed::Vertice <ed::Punto<float> > Vertice1(-1);
+    //ed::Vertice <ed::Punto<float> > Vertice2(-1);
+    //ed::Vertice <ed::Punto<float> > Vertice3(-1);
+    //ed::Vertice <ed::Punto<float> > Vertice4(-1);
+    //ed::Vertice <ed::Punto<float> > Vertice5(-1);
     
     //  unsigned int i, j;
 
@@ -56,15 +57,15 @@ int main(){
 
     ed::Grafo <ed::Punto<float> > graph(vectorVertices, vectorLado);
 
-    //añadirVertices(nombreFichero, graph);
+    añadirVertices(nombreFichero, graph);
 
     std::vector<std::vector<float> > matriz;
 
-    graph.addVertex(punto, Vertice1);
-    graph.addVertex(punto2, Vertice2);
-    graph.addVertex(punto3, Vertice3);
-    graph.addVertex(punto4, Vertice4);
-    graph.addVertex(punto5, Vertice5);
+    //graph.addVertex(punto, Vertice1);
+    //graph.addVertex(punto2, Vertice2);
+    //graph.addVertex(punto3, Vertice3);
+    //graph.addVertex(punto4, Vertice4);
+    //graph.addVertex(punto5, Vertice5);
 
     i++;
     i++;
