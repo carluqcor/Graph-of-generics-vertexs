@@ -170,8 +170,8 @@ class Grafo{
 			for(unsigned int i = 0; i < nVertices; i++)
 			    arbol[i] = std::vector<float> (nVertices, 0);
 
-			int padre = 0;
-			int hijo = 0;
+			float padre = 0;
+			float hijo = 0;
 			while(markedLines.size() + 1 < nVertices){
 			    padre = hijo;
 			    // Marco la fila y elimino la columna del nodo padre.
@@ -181,7 +181,7 @@ class Grafo{
 
 			    // Encuentro la menor distancia entre las filas marcadas.
 			    // El nodo padre es la linea marcada y el nodo hijo es la columna del minimo.
-			    int min = 999;
+			    float min = 999;
 			    for(itVec = markedLines.begin(); itVec != markedLines.end(); itVec++)
 			        for(unsigned int i = 0; i < nVertices; i++)
 			            if(min > adyacencia[*itVec][i]){

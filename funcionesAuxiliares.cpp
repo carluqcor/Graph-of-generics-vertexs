@@ -43,49 +43,49 @@ int ed::menu(){
 	posicion++;
 
 	PLACE(posicion++,12);
-	std::cout <<BICYAN<< "[1] Comprobar si el montículo tiene mediciones"<<RESET;
+	std::cout <<BICYAN<< "[1] Comprobar si el Grafo tiene vertices"<<RESET;
 
 	//////////////////////////////////////////////////////////////////////////////
 	posicion++;
 
 	PLACE(posicion++,12);
-	std::cout <<BIYELLOW<< "[2] Cargar el montículo desde un fichero"<<RESET;
+	std::cout <<BIYELLOW<< "[2] Cargar el Grafo desde un fichero"<<RESET;
 
 	PLACE(posicion++,12);
-	std::cout <<BIYELLOW<< "[3] Grabar el montículo en un fichero"<<RESET;
+	std::cout <<BIYELLOW<< "[3] Grabar las matrices de adyacencia en un fichero"<<RESET;
 
 	//////////////////////////////////////////////////////////////////////////////
 	posicion++;
  
 	PLACE(posicion++,12);
-	std::cout <<BIGREEN<< "[4] Consultar datos del montículo"<<RESET;
+	std::cout <<BIGREEN<< "[4] Consultar los datos del montículo"<<RESET;
 
 	PLACE(posicion++,12);
-	std::cout <<BIGREEN<<"[5] Mostrar mediciones ordenadas por precipitación del montículo"<<RESET;
+	std::cout <<BIGREEN<<"[5] Mostrar la Matriz de Adyacencias"<<RESET;
 
 	PLACE(posicion++,12);
-	std::cout <<BIGREEN<<"[6] Mostrar estadisticas de una fecha"<<RESET;
+	std::cout <<BIGREEN<<"[6] Algoritmo de Prim"<<RESET;
 
 	PLACE(posicion++,12);
-	std::cout <<BIGREEN<<"[7] Mostrar estadisticas de un mes"<<RESET;
+	std::cout <<BIGREEN<<"[7] Algoritmo de Kruskal"<<RESET;
 
 	PLACE(posicion++,12);
-	std::cout <<BIGREEN<<"[8] Borrar todas las mediciones del montículo"<<RESET;
+	std::cout <<BIGREEN<<"[8] Borrar un Vertice"<<RESET;
 
 	//////////////////////////////////////////////////////////////////////////////
 	posicion++;
 
 	PLACE(posicion++,12);
-	std::cout <<BIBLUE<< "[9] Consultar el top"<<RESET;
+	std::cout <<BIBLUE<< "[9] Borrar todos los vertices y lados"<<RESET;
 
 	PLACE(posicion++,12);
-	std::cout <<BIBLUE<<"[10] Insertar una medición"<<RESET;
+	std::cout <<BIBLUE<<"[10] Insertar una Vertice"<<RESET;
 
 	PLACE(posicion++,12);
-	std::cout <<BIBLUE<< "[11] Modificar la cima"<<RESET;
+	std::cout <<BIBLUE<< "[11] Insertar un Lado"<<RESET;
 
 	PLACE(posicion++,12);
-	std::cout <<BIBLUE<< "[12] Eliminar la cima"<<RESET;
+	std::cout <<BIBLUE<< "[12] Generar el Grafo en PNG"<<RESET;
 
 	
 	posicion++;

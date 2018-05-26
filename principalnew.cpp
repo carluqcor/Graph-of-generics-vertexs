@@ -1,9 +1,9 @@
 /*!
-	\file principalGrafo.cpp
-	\brief Programa principal de la práctica 4 de ED: Grafo Abarcador de coste mínimo
-	\author Carlos Luque Córdoba
-  	\date   anywhere
-	\version 1.0
+    \file principalGrafo.cpp
+    \brief Programa principal de la práctica 4 de ED: Grafo Abarcador de coste mínimo
+    \author Carlos Luque Córdoba
+    \date   anywhere
+    \version 1.0
 */
 
 /*!
@@ -28,12 +28,12 @@
 #include "funcionesAuxiliares.hpp"
 
 /*! 
-	\brief   Programa principal de la práctica 4: Grafo Abarcador de coste mínimo
-	\return  int
+    \brief   Programa principal de la práctica 4: Grafo Abarcador de coste mínimo
+    \return  int
 */
 
 int main(){
-	float dist;
+    float dist;
     unsigned int i=1;
     ed::Punto <float> punto(0, 0);
     ed::Punto <float> punto2(0, 1);
@@ -164,10 +164,15 @@ int main(){
 
     edge9.imprimirLado();
 
-
-
     matriz=graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1);
 
     graph.imprimirMatriz(graph.getVectorVertices(), matriz, graph.getVectorEtiquetas().size()+1);
-    ed::prim(graph);
+
+    matriz=graph.prim();
+
+    graph.imprimirMatrizSinLabels(graph.getVectorVertices(), matriz);
+
+    matriz=graph.kruskal();
+
+    graph.imprimirMatrizSinLabels(graph.getVectorVertices(), matriz);
 }

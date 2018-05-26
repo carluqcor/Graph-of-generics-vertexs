@@ -34,8 +34,6 @@
 int main(){
     float dist;
     unsigned int i=1;
-    std::string nombreFichero;
-    std::getline(std::cin,nombreFichero);
     
     ed::Punto <float> punto(0.0, 0.0);
     ed::Punto <float> punto2(0.0, 1.0);
@@ -56,7 +54,7 @@ int main(){
 
     ed::Grafo <ed::Punto<float> > graph(vectorVertices, vectorLado);
 
-    //añadirVertices(nombreFichero, graph);
+   // añadirVertices(nombreFichero, graph);
 
     std::vector<std::vector<float> > matriz;
 
@@ -66,6 +64,7 @@ int main(){
     graph.addVertex(punto4, Vertice4);
     graph.addVertex(punto5, Vertice5);
 
+    i++;
     i++;
     i++;
     i++;
