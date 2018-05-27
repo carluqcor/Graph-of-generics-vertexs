@@ -62,19 +62,14 @@ class Vertice{
 			_label=label;
 		}
 
+		inline void leerVertice(){
+			getPunto().escribirPunto();
+			std::cout<<" "<<getLabel()<<std::endl;
+		}
+
 		inline Vertice<T> &operator=(Vertice<T> const &u){
 			return (*(this)=u);
 		}
-
-
-		inline bool const &operator==(Vertice<T> const &u){
-			if(*this==u)
-				return true;
-			else
-				return false;
-		}
-
-
 	}; //Se cierra la clase Vertice
 } //Se cierra el espacio de nombres de la asignatura ED
 #endif

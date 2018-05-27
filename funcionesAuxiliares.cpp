@@ -109,20 +109,20 @@ int ed::menu(){
 
 	return opcion;
 }
-/*
-int ed::anadirVertices(std::string const & nombreFichero, ed::Grafo <ed::Punto<float> > graph){
+
+void ed::anadirVertices(std::string const & nombreFichero, ed::Grafo <ed::Punto<float> > graph){
 	int j=0;
+	float x, y;
 	std::ifstream grap;
 	bool value;
-	ed::Punto<float> punto;
-	ed::Vertice<ed::Punto<float> > vertice(-1);
 	grap.open(nombreFichero.c_str());
 	std::string f;
 	if(grap.is_open()){
 		while(!grap.eof()){
-	 		grap>>punto;
+	 		grap>>x>>y;
+			ed::Punto<float> punto(x, y);
 	  		if(!grap.eof()){
-				graph.addVertex(punto,vertice);
+				graph.addVertex(punto);
 				j++;
 	  		}
 		}
@@ -133,11 +133,9 @@ int ed::anadirVertices(std::string const & nombreFichero, ed::Grafo <ed::Punto<f
  
  	if(value){
 		std::cout<<BIGREEN<<"El fichero ha sido cargado con exito"<<RESET<<std::endl;
-		return j;
  	}
 	else{
 		std::cout<<BIRED<<"Error al cargar el fichero"<<RESET<<std::endl;
-		return 0;
+		return;
 	}
 }
-*/

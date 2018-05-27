@@ -43,29 +43,27 @@ class Grafo{
 	
 	private:
 		std::vector<Vertice<T> > _vectorVertices; //! Vector de vertices de la STL
+		std::vector<Vertice<T> > _v;
 		typename std::vector<Vertice<T> >::iterator it;
 		
 		//std::vector<std::vector<float> > matriz;
 
-		std::vector<Lado<T> > _vectorLado; //! Vector de vertices de la STL
+		std::vector<Lado<T> > _vectorLado; //! Vector de lados de la STL
+		std::vector<Lado<T> > _l;
 		typename std::vector<Lado<T> >::iterator itEdge;
 		
 		std::vector<int>_label;
 
-		std::vector<int> _from;
-		std::vector<int> _to;
-		std::vector<float> _peso;
-
 	public:
 		//! Constructores de la clase Grafo
 		inline Grafo(std::vector<Vertice<T> >v, std::vector<Lado<T> >l){
-			_vectorVertices=v;
-			_vectorLado=l;
+			_v=v;
+			_l=l;
 		}
 
 		//! Observadores públicos de la clase Grafo
 		inline bool isEmpty(){
-			if(_vectorVertices.size()==0)
+			if(getVectorVertices().size()==0)
 				return true;
 			else
 				return false;
@@ -81,29 +79,6 @@ class Grafo{
 				return false;
 		}
 
-		bool has(typename std::vector<Vertice<T> >::iterator ot){
-			#ifndef NDEBUG
-				assert(isEmpty()==false);
-			#endif
-			for(ot=_vectorVertices.begin(); ot!=_vectorVertices.end(); ot++){
-			//	if(*ot==currVertex())
-					return true;
-			}
-			return false;
-		}
-
-		bool hasEdge(typename std::vector<Lado<T> >::iterator otEdge){
-			#ifndef NDEBUG
-				assert(_vectorVertices.size()>=2);
-			#endif
-			otEdge=_vectorLado.begin();
-			for(*otEdge; otEdge!=_vectorLado.end(); otEdge++){
-				if(*otEdge==currEdge())
-					return true;
-			}
-			return false;
-		}
-
 		float getVectorCoste(std::vector<Lado<T> >l, int u, int v){
 			typename std::vector<Lado<T> >::iterator otEdge;
 			for(otEdge=_vectorLado.begin();otEdge!=_vectorLado.end();otEdge++){
@@ -115,10 +90,12 @@ class Grafo{
 			return 0;
 		}
 
-		inline bool hasCurrVertex(){
-			if(has(it))
-				return true;
-			else
+		inline bool hasCurrVertex(Vertice<T> &v){
+			typename std::vector<Vertice<T> >::iterator ot;
+			for(ot=_vectorVertices.begin();ot!=_vectorVertices.end();ot++){
+				if(ot->getPunto().getX()==v.getPunto().getX() && ot->getPunto().getY()==v.getPunto().getY())
+					return true;
+			}
 				return false;		
 		}
 
@@ -302,23 +279,27 @@ class Grafo{
 	//	typename std::vector<Vertice<T> >::iterator getIteradorVertice(){return *it;}
 		typename std::vector<Lado<T> >::iterator getIteradorLado(){return itEdge;}
 
-		inline std::vector<int> getFrom(){return _from;}
-		inline std::vector<int> getTo(){return _to;}
-		inline std::vector<float> getPeso(){return _peso;}
-
-		inline void setFrom(int from){_from.push_back(from);}
-		inline void setTo(int to){_to.push_back(to);}
-		inline void setPeso(float peso){_peso.push_back(peso);}
-
 		//! Modificadores públicos del grafo de la clase Grafo
-		void addVertex(T const punto, Vertice<T> &v){
-			v.setPunto(punto);
-			v.setLabel(_label.size()+1);
-			_vectorVertices.push_back(v);
-			setLabelVertex(_label.size()+1);
-			#ifndef NDEBUG
-				assert(this->hasCurrVertex());
-			#endif	
+		void addVertex(T &punto){
+			Vertice<T> v(punto, getVectorEtiquetas().size()+1);
+			if(hasCurrVertex(v)){
+				std::cout<<BIRED<<"Error ";
+				v.getPunto().escribirPunto();
+				std::cout<<" ya está en el grafo"<<std::endl;
+			}
+			else{
+				_vectorVertices.push_back(v);
+				if(getVectorVertices().size()==1)
+					it=getVectorVertices().begin();
+				std::cout<<BIYELLOW<<"Se ha insertado ";
+				v.getPunto().escribirPunto();
+				std::cout<<" con etiqueta: "<<v.getLabel()<<" correctamente"<<RESET<<std::endl;
+				setLabelVertex(getVectorEtiquetas().size()+1);
+			}
+		//	nextVertex();
+			//#ifndef NDEBUG
+			//	assert(hasCurrVertex(it));
+			//#endif	
 		}
 
 		inline void setLabelVertex(int label){
@@ -331,13 +312,21 @@ class Grafo{
 			lado.setLadoCoste(coste);
 
 			_vectorLado.push_back(lado);
+			if(getVectorLado().size()==1)
+				itEdge=getVectorLado().begin();
 
 			#ifndef NDEBUG
 			//	assert(this->hasCurrEdge());
 				assert(coste>=0);
 			#endif
 		}
-		
+
+		void imprimirVertices(){
+			for(unsigned int i=0;i<_vectorVertices.size();i++){      
+				_vectorVertices[i].leerVertice();
+			}
+		}
+
 		/*
 			1. Si hay lados(bool adjacent) Se deben borrar sus lados por lo tanto primero se guardará el vertice en uno auxiliar, y mientras adjacent sea true se usará nextEdge() y currEdge y se borrará y se volverá al vertice con goToVertex
 			2. Se borra el vertice actual (NO EL AUXILIAR CREADO) osea un _vectorVertices.erase(*this) y se hace un nextVertex()
@@ -345,7 +334,7 @@ class Grafo{
 		*/
 		void removeVertex(){
 			#ifndef	NDEBUG
-				assert(hasCurrVertex());
+				assert(hasCurrVertex(it));
 			#endif
 			do{
 				removeEdge();
@@ -353,7 +342,7 @@ class Grafo{
 			_label.erase(currVertex().getLabelVertex());
 			_vectorVertices.erase(currVertex());
 			#ifndef	NDEBUG
-				assert(!hasCurrVertex());
+				assert(!hasCurrVertex(it));
 			#endif
 		}
 
@@ -386,6 +375,21 @@ class Grafo{
     		std::cout<<std::endl;
 		}
 
+		void matricesAFichero(std::vector<Vertice<T> > v, std::vector<std::vector<float> > v2, unsigned int i){
+			std::string f;
+			std::ifstream grap;
+			std::cout<<BIBLUE<<"Introduce el nombre del fichero: ";
+            std::getline(std::cin,f);
+            std::cout<<RESET<<std::endl;
+            matriz.open(f.c_str());
+            for(unsigned int y=0;y<i;y++){
+       			for(unsigned int x=0;x<i;x++){
+					fprintf(f, "%f\t", v2[y][x]);
+				}
+				fprintf(f, "\n", v2[i]);
+			}
+		}
+
 		void imprimirMatrizSinLabels(std::vector<Vertice<T> > v, std::vector<std::vector<float> > v2){
     		for(unsigned int y=0;y<v.size();y++){
        			for(unsigned int x=0;x<v.size();x++){
@@ -398,7 +402,7 @@ class Grafo{
 
 
 		//! Modificadores del cursor público de la clase Grafo
-		void findFirstVertex(T x, T y){
+		/*void findFirstVertex(T x, T y){
 			Punto <float> *punto = new Punto<float>(x,y);
 			typename std::vector<Vertice<T> >::const_iterator ot;
 			for(ot=_vectorVertices.begin(); ot!=_vectorVertices.end(); ot++){
@@ -460,9 +464,9 @@ class Grafo{
 			}
 			return 0;
 		}
-
+*/
 		void goToVertex(ed::Vertice<T> const &vertice){
-			it=_vectorVertices.at(vertice);
+			it=getVectorVertices().at(vertice);
 		}
 
 		void goToEdge(int const &u, int const &v){
@@ -487,9 +491,9 @@ class Grafo{
 		}
 
 		void nextVertex(){
-			it++;
+			it;
 			#ifndef NDEBUG
-				assert(has(it));
+				assert(hasCurrVertex(it));
 			#endif
 		}
 
@@ -502,9 +506,9 @@ class Grafo{
 		}
 
 		void nextEdge(){
-			itEdge++;
+			itEdge->itEdge++;
 			#ifndef NDEBUG
-				assert(hasEdge(itEdge));
+				assert(hasCurrEdge(itEdge));
 			#endif
 		}
 	}; //Se cierra la clase Grafo

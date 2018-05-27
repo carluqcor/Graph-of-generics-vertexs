@@ -33,8 +33,7 @@ namespace ed{
 	*/
  	int menu();
 
- 	//int anadirVertices(std::string const & nombreFichero, Grafo <Punto<float> > graph);
-
+	void anadirVertices(std::string const & nombreFichero, Grafo <Punto<float> > graph);
 
 } // Fin del espacio de nombre de la asignatura: ed
 

@@ -10,6 +10,8 @@
 // Facilita la entrada y salida 
 #include <iostream>
 #include <fstream>
+// atoi, atof
+#include <stdlib.h>
 
 // 
 using std::ostream;
@@ -134,7 +136,7 @@ template < class T >
 			\post      Ninguna
 			\sa        getX(), getY(), setX(), setY()
 		*/
-		inline Punto<T> & operator=(Punto const &q)
+		inline Punto<T> & operator=(T const &q)
 		{
 			setX(q.getX());
 			setY(q.getY());
@@ -177,10 +179,22 @@ template < class T >
 			\sa    getX(), getY()
 		*/
 		void escribirPunto(){
-			std::cout << "(" << getX() << ", " << getY() << ")" << std::endl;
+			std::cout << "(" << getX() << ", " << getY() << ")";
 		}
   
 	}; // Fin de la definición de la clase Punto
+
+//!  Definición de la plantilla de la clase Punto
+template < class T > 
+	//! Sobrecarga del operador de salida
+	istream &operator>>(istream &stream, ed::Punto <T> punto){
+                T x;
+		std::getline(stream, x, ' ');
+		punto.setX(x);
+		std::getline(stream, x, '\n');
+		punto.setY(x);
+		return stream;
+	}
 
 } // \brief Fin de namespace ed.
 
