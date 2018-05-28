@@ -62,9 +62,9 @@ class Vertice{
 			_label=label;
 		}
 
-		inline void leerVertice(){
+		inline void imprimirVertice(){
 			getPunto().escribirPunto();
-			std::cout<<" "<<getLabel()<<std::endl;
+			std::cout<<" "<<getLabel()<<RESET<<std::endl;
 		}
 
 		inline Vertice<T> &operator=(Vertice<T> const &u){

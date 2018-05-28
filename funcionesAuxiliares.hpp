@@ -33,8 +33,6 @@ namespace ed{
 	*/
  	int menu();
 
-	void anadirVertices(std::string const & nombreFichero, Grafo <Punto<float> > graph);
-
 } // Fin del espacio de nombre de la asignatura: ed
 
 // Fin de _FuncionesAuxiliares_HPP_

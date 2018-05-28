@@ -13,6 +13,8 @@
 // atoi, atof
 #include <stdlib.h>
 
+#include "macros.hpp"
+
 // 
 using std::ostream;
 using std::istream;
@@ -179,7 +181,7 @@ template < class T >
 			\sa    getX(), getY()
 		*/
 		void escribirPunto(){
-			std::cout << "(" << getX() << ", " << getY() << ")";
+			std::cout<<BIYELLOW<< "(" << getX() << ", " << getY() << ")";
 		}
   
 	}; // Fin de la definición de la clase Punto

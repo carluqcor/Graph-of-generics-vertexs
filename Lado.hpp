@@ -96,9 +96,9 @@ class Lado{
 	template < class T > 
 	ostream &operator<<(ostream &stream, Lado<T> const &lado){
 		stream << lado.getFirstVertex();
-		stream << " ";
+		stream << "\t";
 		stream << lado.getSecondVertex();
-		stream << " ";
+		stream << "\t";
 		stream << lado.getLadoCoste();
 		stream << "\n";
 

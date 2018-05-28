@@ -58,7 +58,7 @@ int ed::menu(){
 	posicion++;
  
 	PLACE(posicion++,12);
-	std::cout <<BIGREEN<< "[4] Consultar los datos del montículo"<<RESET;
+	std::cout <<BIGREEN<< "[4] Mostrar los vertices y lados del Grafo"<<RESET;
 
 	PLACE(posicion++,12);
 	std::cout <<BIGREEN<<"[5] Mostrar la Matriz de Adyacencias"<<RESET;
@@ -108,34 +108,4 @@ int ed::menu(){
     std::cin.ignore();
 
 	return opcion;
-}
-
-void ed::anadirVertices(std::string const & nombreFichero, ed::Grafo <ed::Punto<float> > graph){
-	int j=0;
-	float x, y;
-	std::ifstream grap;
-	bool value;
-	grap.open(nombreFichero.c_str());
-	std::string f;
-	if(grap.is_open()){
-		while(!grap.eof()){
-	 		grap>>x>>y;
-			ed::Punto<float> punto(x, y);
-	  		if(!grap.eof()){
-				graph.addVertex(punto);
-				j++;
-	  		}
-		}
- 	grap.close();
- 	value=true;
- 	}else
- 		value=false;
- 
- 	if(value){
-		std::cout<<BIGREEN<<"El fichero ha sido cargado con exito"<<RESET<<std::endl;
- 	}
-	else{
-		std::cout<<BIRED<<"Error al cargar el fichero"<<RESET<<std::endl;
-		return;
-	}
 }

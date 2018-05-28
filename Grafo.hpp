@@ -52,13 +52,15 @@ class Grafo{
 		std::vector<Lado<T> > _l;
 		typename std::vector<Lado<T> >::iterator itEdge;
 		
+		std::vector<std::vector<float> > _matriz;
+		bool _dirigido;
+
 		std::vector<int>_label;
 
 	public:
 		//! Constructores de la clase Grafo
-		inline Grafo(std::vector<Vertice<T> >v, std::vector<Lado<T> >l){
-			_v=v;
-			_l=l;
+		inline Grafo(bool dirigido){
+			setDirected(dirigido);
 		}
 
 		//! Observadores públicos de la clase Grafo
@@ -68,6 +70,10 @@ class Grafo{
 			else
 				return false;
 		}
+
+		std::vector<std::vector<float> > getMatriz(){return _matriz;}
+
+		bool getDirected(){return _dirigido;}
 
 		bool adjacent(int const u, int const v, std::vector<Lado<T> > l){
 			typename std::vector<Lado<T> >::const_iterator otEdge;
@@ -97,6 +103,15 @@ class Grafo{
 					return true;
 			}
 				return false;		
+		}
+
+		inline int devolverEtiqueta(Vertice<T> &v){
+			typename std::vector<Vertice<T> >::iterator ot;
+			for(ot=_vectorVertices.begin();ot!=_vectorVertices.end();ot++){
+				if(ot->getPunto().getX()==v.getPunto().getX() && ot->getPunto().getY()==v.getPunto().getY())
+					return ot->getLabel();
+			}
+				return 0;		
 		}
 
 		inline Vertice<T> currVertex(){
@@ -229,8 +244,14 @@ class Grafo{
 	       				}else{
 		       				if(i-x!=0){
 				       			if(adjacent(v[y-1].getLabel(), v[x-1].getLabel(), l)){
-					            	Vector2[y][x]=getVectorCoste(l, v[y-1].getLabel(), v[x-1].getLabel());
-					            	Vector2[x][y]=getVectorCoste(l, v[y-1].getLabel(), v[x-1].getLabel());
+				       								       			std::cout<<getDirected()<<std::endl;
+
+				       				if(getDirected()==true)
+					            		Vector2[y][x]=getVectorCoste(l, v[y-1].getLabel(), v[x-1].getLabel());
+				            		else{
+										Vector2[y][x]=getVectorCoste(l, v[y-1].getLabel(), v[x-1].getLabel());
+										Vector2[x][y]=getVectorCoste(l, v[y-1].getLabel(), v[x-1].getLabel());
+				            		}
 				            	}
 					        }
 					    }
@@ -249,8 +270,12 @@ class Grafo{
        						Vector2[y][x]=0;
 	       				}else{
 				       		if(adjacent(v[y].getLabel(), v[x].getLabel(), l)){
-					           	Vector2[y][x]=getVectorCoste(l, v[y].getLabel(), v[x].getLabel());
-					           	Vector2[x][y]=getVectorCoste(l, v[y].getLabel(), v[x].getLabel());
+					           	if(getDirected()==true)
+					            		Vector2[y][x]=getVectorCoste(l, v[y].getLabel(), v[x].getLabel());
+				            	else{
+									Vector2[y][x]=getVectorCoste(l, v[y].getLabel(), v[x].getLabel());
+									Vector2[x][y]=getVectorCoste(l, v[y].getLabel(), v[x].getLabel());
+				            	}
 				            }
 					    }
 				    }
@@ -280,12 +305,16 @@ class Grafo{
 		typename std::vector<Lado<T> >::iterator getIteradorLado(){return itEdge;}
 
 		//! Modificadores públicos del grafo de la clase Grafo
+		void setMatriz(std::vector<std::vector<float> > matriz){_matriz=matriz;}
+
+		void setDirected(bool dirigido){_dirigido=dirigido;}
+
 		void addVertex(T &punto){
 			Vertice<T> v(punto, getVectorEtiquetas().size()+1);
 			if(hasCurrVertex(v)){
 				std::cout<<BIRED<<"Error ";
 				v.getPunto().escribirPunto();
-				std::cout<<" ya está en el grafo"<<std::endl;
+				std::cout<<BIRED<<" ya está en el grafo"<<RESET<<std::endl;
 			}
 			else{
 				_vectorVertices.push_back(v);
@@ -314,6 +343,7 @@ class Grafo{
 			_vectorLado.push_back(lado);
 			if(getVectorLado().size()==1)
 				itEdge=getVectorLado().begin();
+			std::cout<<BIYELLOW<<lado.getFirstVertex()<<" "<<lado.getSecondVertex()<<" -> "<<lado.getLadoCoste()<<RESET<<std::endl;
 
 			#ifndef NDEBUG
 			//	assert(this->hasCurrEdge());
@@ -322,10 +352,64 @@ class Grafo{
 		}
 
 		void imprimirVertices(){
-			for(unsigned int i=0;i<_vectorVertices.size();i++){      
-				_vectorVertices[i].leerVertice();
+			unsigned int i;
+			int parar=0;
+			for(i=0;i<_vectorVertices.size();i++){	
+				if(parar==22){
+					PLACE(1,1);
+					std::cout<<BIYELLOW<<"(X"<<", "<<"Y" <<"Etiqueta"<<RESET<<std::endl;	
+					PLACE(25,1);
+					std::cout << "Pulse ";
+					std::cout << BIGREEN;
+					std::cout << "ENTER";
+					std::cout << RESET;
+					std::cout << " para mostrar la siguiente ";
+					std::cout << INVERSE;
+					std::cout << "página"; 
+					std::cout << RESET;
+
+					// Pausa
+					std::cin.ignore();
+					PLACE(2,1);
+					std::cout << CLEAR_SCREEN;
+					parar=0;
+				}else{
+					_vectorVertices[i].imprimirVertice();
+					parar++;
+				}
+			
 			}
 		}
+		
+		void imprimirLados(){
+			unsigned int i;
+			int parar=0;
+			for(i=0;i<_vectorLado.size();i++){	
+				if(parar==22){
+					PLACE(1,1);
+					std::cout<<BIYELLOW<<"(Etiqueta 1"<<", "<<"Etiqueta 2" <<"Peso"<<RESET<<std::endl;	
+					PLACE(25,1);
+					std::cout << "Pulse ";
+					std::cout << BIGREEN;
+					std::cout << "ENTER";
+					std::cout << RESET;
+					std::cout << " para mostrar la siguiente ";
+					std::cout << INVERSE;
+					std::cout << "página"; 
+					std::cout << RESET;
+
+					// Pausa
+					std::cin.ignore();
+					PLACE(2,1);
+					std::cout << CLEAR_SCREEN;
+					parar=0;
+				}else{
+					std::cout<<BIYELLOW<<_vectorLado[i].getFirstVertex()<<" "<<_vectorLado[i].getSecondVertex()<<" -> "<<_vectorLado[i].getLadoCoste()<<RESET<<std::endl;
+					parar++;
+				}
+			}
+		}
+			
 
 		/*
 			1. Si hay lados(bool adjacent) Se deben borrar sus lados por lo tanto primero se guardará el vertice en uno auxiliar, y mientras adjacent sea true se usará nextEdge() y currEdge y se borrará y se volverá al vertice con goToVertex
@@ -375,20 +459,20 @@ class Grafo{
     		std::cout<<std::endl;
 		}
 
-		void matricesAFichero(std::vector<Vertice<T> > v, std::vector<std::vector<float> > v2, unsigned int i){
+		/*void matricesAFichero(std::vector<Vertice<T> > v, std::vector<std::vector<float> > v2, unsigned int i){
 			std::string f;
-			std::ifstream grap;
+			std::ifstream matriz;
 			std::cout<<BIBLUE<<"Introduce el nombre del fichero: ";
             std::getline(std::cin,f);
             std::cout<<RESET<<std::endl;
             matriz.open(f.c_str());
             for(unsigned int y=0;y<i;y++){
        			for(unsigned int x=0;x<i;x++){
-					fprintf(f, "%f\t", v2[y][x]);
+					f<<v2[y][x];
 				}
-				fprintf(f, "\n", v2[i]);
+				f<<;
 			}
-		}
+		}*/
 
 		void imprimirMatrizSinLabels(std::vector<Vertice<T> > v, std::vector<std::vector<float> > v2){
     		for(unsigned int y=0;y<v.size();y++){
@@ -514,7 +598,13 @@ class Grafo{
 	}; //Se cierra la clase Grafo
 	
 	//! Sobrecarga del operador de salida
-	//ostream &operator<<(ostream &stream, Vertice<T>  const &vertice){
+	/*ostream &operator<<(ostream &stream, std::vector<std::vector<float> > v2){
+		stream << v2;
+		stream << "\t"; 
+		stream << "\n";
+		return stream;
+
+	}*/
 
 	//! Sobrecarga del operador de entrada
 	//istream &operator>>(istream &stream, Vertice<T> &vertice); 

@@ -32,18 +32,40 @@
     \return  int
 */
 int main(){
-    float x, y;
+    float x1, y1, x2, y2, f;
     std::ifstream grap;
     bool value;
+    std::vector<std::vector<float> > matriz;
 
-    int opcion;
+    int opcion, opcion2;
     std::string nombreFichero;
+    int directed;
+    bool direct;
 
-    std::vector<ed::Vertice<ed::Punto<float> > > vectorVertices; //! Vector de Vertices de Puntos de la STL
+    std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
+    PLACE(1,1);
+    std::cout <<BIGREEN<<"BIENVENIDO AL PROGRAMA PRINCIPAL DEL GRAFO DE CARLOS LUQUE CÓRDOBA";
+    PLACE(2,3);
 
-    std::vector<ed::Lado<ed::Punto<float> > >  vectorLado; //! Vector Lados de Puntos de la STL
+    std::cout <<BIBLUE<<"\nEl grafo es dirigido (0) o no dirigido (1): ";
+    std::cin>>directed;
+    std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
+    if(directed==0 || directed==1){
+        switch(directed){
+            case 0:
+                direct=true;
+                break;
+            
+            case 1:
+                direct=false;
+                break;
+        }
+    }else{
+        std::cout<<BIRED<<"OPCIÓN "<<directed<<" NO VALIDA!!"<<RESET<<std::endl;
+        exit(-1);
+    }
 
-    ed::Grafo <ed::Punto<float> > graph(vectorVertices, vectorLado);
+    ed::Grafo <ed::Punto<float> > graph(direct);
     do{
         // Se elige la opción del menún
         opcion = ed::menu();        
@@ -71,30 +93,105 @@ int main(){
 
             //////////////////////////////////////////////////////////////////////////////
             case 2: 
-                    std::cout <<BIPURPLE<< "[2] Cargar el montículo desde un fichero" <<RESET<< std::endl;
-                    std::cout<<BIBLUE<<"Introduce el nombre del fichero: ";
-                    std::getline(std::cin,nombreFichero);
-                    std::cout<<RESET<<std::endl;
-                    grap.open(nombreFichero.c_str());
-                    if(grap.is_open()){
-                        while(!grap.eof()){
-                            grap>>x>>y;
-                            ed::Punto<float> punto(x, y);
-                            if(!grap.eof()){
-                                graph.addVertex(punto);
+                    PLACE(1,1);
+                    std::cout <<BIPURPLE<< "[2] Cargar el grafo desde ficheros" <<RESET<< std::endl;
+        
+                        std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"1"<<BIGREEN<<" para cargar los vertices en el grafo desde el fichero" <<RESET;
+                        std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"2"<<BIGREEN<<" para cargar los lados en el grafo desde el fichero" <<RESET;
+                        std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"3"<<BIGREEN<<" para cargar los vertices y los lados en el grafo desde el fichero" <<RESET;
+                        std::cout <<BIBLUE<<"\n\nIntroduce la opción deseada: "<<BIYELLOW;
+                        std::cin>>opcion2;
+                        if(opcion2>0 && opcion<4){
+                            std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
+                            switch(opcion2){
+                                case 1:
+                                    PLACE(2,2);
+                                    std::cout <<BIRED<<"ATENCION!!! NO INTRODUZCA LADOS" <<RESET<< std::endl;
+                                    std::cout<<BIBLUE<<"Introduce el nombre del fichero: ";
+                                    std::cin>>nombreFichero;
+                                    std::cout<<RESET<<std::endl;
+                                    std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
+                                    PLACE(1,1);
+                                    grap.open(nombreFichero.c_str());
+                                    if(grap.is_open()){
+                                        while(!grap.eof()){
+                                            grap>>x1>>y1;
+                                            ed::Punto<float> punto(x1, y1);
+                                            if(!grap.eof()){
+                                                graph.addVertex(punto);
+                                            }
+                                        }
+                                    grap.close();
+                                    value=true;
+                                    }else
+                                        value=false;
+                                    
+                                    if(value){
+                                        std::cout<<BIGREEN<<"\nEl fichero ha sido cargado con exito"<<RESET<<std::endl;
+                                        std::cin.ignore();
+                                    }
+                                    else{
+                                        std::cout<<BIRED<<"Error al cargar el fichero"<<RESET<<std::endl;
+                                        std::cin.ignore();
+                                    }
+                                    break;
+                                
+                                case 2:
+                                    PLACE(2,2);
+                                    if(graph.getVectorVertices().size()==0){
+                                        std::cout<<ONIRED<<BIYELLOW<<"El Grafo no tiene vertices, introduzca primero dos vertices como mínimo"<<RESET<<std::endl;
+                                        std::cin.ignore();
+                                    }
+                                    else{
+                                        std::cout <<BIRED<<"ATENCION!!! NO INTRODUZCA VERTICES" <<RESET<< std::endl;
+                                        std::cout<<BIBLUE<<"Introduce el nombre del fichero: ";
+                                        std::cin>>nombreFichero;
+                                        std::cout<<RESET<<std::endl;
+                                        std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
+                                        PLACE(1,1);
+                                        grap.open(nombreFichero.c_str());
+                                        if(grap.is_open()){
+                                            while(!grap.eof()){
+                                                grap>>x1>>y1>>x2>>y2;
+                                                ed::Punto<float> punto1(x1, y1);
+                                                ed::Punto<float> punto2(x2, y2);
+                                                f=ed::calcularDistanciaEuclidea(punto1.getX(), punto1.getY(), punto2.getX(), punto2.getY());
+                                                ed::Vertice<ed::Punto<float> > v1(punto1, -1);
+                                               ed::Vertice<ed::Punto<float> > v2(punto2, -1);
+                                               ed::Lado<ed::Punto<float> >Lado(f);
+
+                                                if(graph.devolverEtiqueta(v1)!=0 && graph.devolverEtiqueta(v2)!=0){
+                                                    if(!grap.eof()){
+                                                        graph.addEdge(graph.devolverEtiqueta(v1), graph.devolverEtiqueta(v2), Lado,  f);
+                                                    }
+                                                }
+                                            }
+                                        grap.close();
+                                        value=true;
+                                        }else
+                                            value=false;
+                                        
+                                        if(value){
+                                            std::cout<<BIGREEN<<"\nEl fichero ha sido cargado con exito"<<RESET<<std::endl;
+                                            std::cin.ignore();
+                                        }
+                                        else{
+                                            std::cout<<BIRED<<"Error al cargar el fichero"<<RESET<<std::endl;
+                                            std::cin.ignore();
+                                        }
+                                    }
+                                    break;
+                                
+                                case 3:
+
+                                    break;
                             }
+                        }else{
+                            std::cout<<BIRED<<"OPCIÓN "<<directed<<" NO VALIDA!!"<<RESET<<std::endl;
+                            std::cin.ignore();
+                            break;
                         }
-                    grap.close();
-                    value=true;
-                    }else
-                        value=false;
-                    
-                    if(value)
-                        std::cout<<BIGREEN<<"\nEl fichero ha sido cargado con exito"<<RESET<<std::endl;
-                    else{
-                        std::cout<<BIRED<<"Error al cargar el fichero"<<RESET<<std::endl;
-                    }
-                break;
+                    break;
 
             case 3: 
                     
@@ -102,11 +199,45 @@ int main(){
 
             //////////////////////////////////////////////////////////////////////////////
             case 4: 
+                    std::cout <<BIPURPLE<< "[4] Mostrar los vertices y lados del Grafo" <<RESET<< std::endl;
+                    std::cout <<BIYELLOW<< "Estos son los vertices del Grafo" <<RESET<< std::endl;
+                    graph.imprimirVertices();
+                    PLACE(25,1);
+                    std::cout << "Pulse ";
+                    std::cout << BIGREEN;
+                    std::cout << "ENTER";
+                    std::cout << RESET;
+                    std::cout << " para mostrar la siguiente ";
+                    std::cout << INVERSE;
+                    std::cout << "los lados"; 
+                    std::cout << RESET;
+
+                    // Pausa
+                    std::cin.ignore();
+                    PLACE(2,1);
+                    std::cout << CLEAR_SCREEN;
+                    std::cout <<BIYELLOW<< "Estos son los lados del Grafo" <<RESET<< std::endl;
+                    graph.imprimirLados();
+                    PLACE(25,1);
+                    std::cout << "Pulse ";
+                    std::cout << BIGREEN;
+                    std::cout << "ENTER";
+                    std::cout << RESET;
+                    std::cout << " para mostrar la siguiente ";
+                    std::cout << INVERSE;
+                    std::cout << "el menú"; 
+                    std::cout << RESET;
+
+                    // Pausa
+                    std::cin.ignore();
+                    PLACE(2,1);
+                    std::cout << CLEAR_SCREEN;
                     break;
 
             case 5: 
-                    std::cout<<BIPURPLE<< "[5] Mostrar las mediciones del montículo: " <<RESET<< std::endl;
-
+                    std::cout<<BIPURPLE<< "[5] Mostrar la Matriz de Adyacencias: " <<RESET<< std::endl;
+                    graph.setMatriz(graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1));
+                    graph.imprimirMatriz(graph.getVectorVertices(), graph.getMatriz(), graph.getVectorEtiquetas().size()+1);
                     break;
 
 
@@ -190,10 +321,6 @@ int main(){
     //unsigned int i, j;
 
    //anadirVertices(nombreFichero, graph);
-
-    std::vector<std::vector<float> > matriz;
-
-    
 
 
     //graph.addVertex(punto, Vertice1);
@@ -284,10 +411,7 @@ int main(){
 
     edge9.imprimirLado();
 
-    matriz=graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1);
-
-    graph.imprimirMatriz(graph.getVectorVertices(), matriz, graph.getVectorEtiquetas().size()+1);
-
+   
     matriz=graph.prim();
 
     graph.imprimirMatrizSinLabels(graph.getVectorVertices(), matriz);
