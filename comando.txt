@@ -1,0 +1,1 @@
+ dot grafoDirigido.dot -o grafoDirigido.png -Tpng -Grankdir=LR 

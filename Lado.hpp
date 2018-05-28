@@ -86,24 +86,30 @@ class Lado{
 		}
 
 		void imprimirLado(){
-			std::cout<<*this<<std::endl;
+			std::cout<< this->getFirstVertex()<<"\t"<<this->getSecondVertex()<< "\t"<<this->getLadoCoste()<< "\n"<<std::endl;
 		}
 
 	}; //Se cierra la clase Lado
 
 	//! Sobrecarga del operador de salida
 	//!  Definición de la plantilla de la clase Grafo
-	template < class T > 
-	ostream &operator<<(ostream &stream, Lado<T> const &lado){
-		stream << lado.getFirstVertex();
-		stream << "\t";
-		stream << lado.getSecondVertex();
-		stream << "\t";
-		stream << lado.getLadoCoste();
-		stream << "\n";
 
+	template < class T > 
+	ostream &operator<<(ostream &stream, std::vector<Lado<T> > &lado){
+		stream << "graph A {";
+		stream << "\n";
+		for(unsigned int i=0; i<lado.size();i++){
+			stream << lado[i].getFirstVertex();
+			stream << " -- ";
+			stream << lado[i].getSecondVertex();
+			stream << " [label=\"";
+			stream << lado[i].getLadoCoste();
+			stream << "\"];\n";
+		}
+		stream << "}";
 		return stream;
 	}
+
 
 } //Se cierra el espacio de nombres de la asignatura ED
 #endif

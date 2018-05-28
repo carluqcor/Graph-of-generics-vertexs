@@ -109,3 +109,85 @@ int ed::menu(){
 
 	return opcion;
 }
+
+std::vector<std::vector<float> > ed::prim(ed::Grafo <ed::Punto<float> > graph, ed::Grafo <ed::Punto<float> > graph2){
+	// uso una copia de ady porque necesito eliminar columnas
+	unsigned int nVertices=graph.getVectorVertices().size();
+	std::vector< std::vector<float> > adyacencia = graph.getMatrizWLabels();
+	std::vector< std::vector<float> > arbol(nVertices);
+	std::vector<float> markedLines;
+	std::vector<float> :: iterator itVec;
+
+	// Inicializo las distancias del arbol en INF.
+	for(unsigned int i = 0; i < nVertices; i++)
+	    arbol[i] = std::vector<float> (nVertices, 0);
+
+	float padre = 0;
+	float hijo = 0;
+	while(markedLines.size() + 1 < nVertices){
+	    padre = hijo;
+	    // Marco la fila y elimino la columna del nodo padre.
+	    markedLines.push_back(padre);
+	    for(unsigned int i = 0; i < nVertices; i++)
+	        adyacencia[i][padre] = 999;
+
+	    // Encuentro la menor distancia entre las filas marcadas.
+	    // El nodo padre es la linea marcada y el nodo hijo es la columna del minimo.
+	    float min = 999;
+	    for(itVec = markedLines.begin(); itVec != markedLines.end(); itVec++)
+	        for(unsigned int i = 0; i < nVertices; i++)
+	            if(min > adyacencia[*itVec][i]){
+	                min = adyacencia[*itVec][i];
+	                padre = *itVec;
+	                hijo = i;
+	            }
+
+	    arbol[padre][hijo] = min;
+	    arbol[hijo][padre] = min;
+	}
+	return arbol;
+}
+
+// Devuelve la matriz de adyacencia del árbol mínimo.
+std::vector<std::vector<float> > ed::kruskal(ed::Grafo <ed::Punto<float> > graph, ed::Grafo <ed::Punto<float> > graph2){
+    std::vector< std::vector<float> > adyacencia = graph.getMatrizWLabels();
+    int nVertices=graph.getVectorVertices().size();
+    std::vector< std::vector<float> > arbol(nVertices);
+    std::vector<float> visitado(nVertices); // Indica el que nodo ha sido visitado
+
+    for(int i = 0; i < nVertices; i++){
+        arbol[i] =std::vector<float> (nVertices, 0);
+        visitado[i] = i;
+    }
+
+    float Vertice1=0;
+    float Vertice2=0;
+    float arcos = 1; // Atributo para controlar los ciclos
+    while(arcos < nVertices){
+        //Con este while buscamos el camino mínimo sin tener un ciclo
+        float min = 9999; //Infinito para los lados no visitados
+        for(int i = 0; i < nVertices; i++)
+            for(int j = 0; j < nVertices; j++)
+                if(min > adyacencia[i][j] && adyacencia[i][j]!=0 && visitado[i] != visitado[j]){
+                    min = adyacencia[i][j];
+                    Vertice1 = i;
+                    Vertice2 = j;
+                }
+
+        // Si los nodos no visitadon al mismo árbol agrego el arco al árbol mínimo.
+        if(visitado[Vertice1] != visitado[Vertice2]){
+            arbol[Vertice1][Vertice2] = min;
+            arbol[Vertice2][Vertice1] = min;
+
+            // Todos los nodos del árbol del Vertice2 ahora visitadon al árbol del Vertice1.
+        	float temp = visitado[Vertice2];
+        	visitado[Vertice2] = visitado[Vertice1];
+        	for(int k = 0; k < nVertices; k++)
+        		if(visitado[k] == temp)
+        			visitado[k] = visitado[Vertice1];
+
+            arcos++;
+        }
+    }
+    return arbol;
+}

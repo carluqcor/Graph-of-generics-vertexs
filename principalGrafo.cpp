@@ -34,29 +34,34 @@
 int main(){
     float x1, y1, x2, y2, f;
     std::ifstream grap;
+    std::ofstream png;
     bool value;
     std::vector<std::vector<float> > matriz;
+    std::vector<ed::Lado<ed::Punto<float> > > l;
+    int control;
 
     int opcion, opcion2;
     std::string nombreFichero;
     int directed;
-    bool direct;
+    bool direct, val=false;
+    char nombreFichero2[10];
+
 
     std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
     PLACE(1,1);
     std::cout <<BIGREEN<<"BIENVENIDO AL PROGRAMA PRINCIPAL DEL GRAFO DE CARLOS LUQUE CÓRDOBA";
     PLACE(2,3);
 
-    std::cout <<BIBLUE<<"\nEl grafo es dirigido (0) o no dirigido (1): ";
+    std::cout <<BIBLUE<<"\nEl grafo es dirigido (1) o no dirigido (2): ";
     std::cin>>directed;
     std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
-    if(directed==0 || directed==1){
+    if(directed==1 || directed==2){
         switch(directed){
-            case 0:
+            case 1:
                 direct=true;
                 break;
             
-            case 1:
+            case 2:
                 direct=false;
                 break;
         }
@@ -66,6 +71,8 @@ int main(){
     }
 
     ed::Grafo <ed::Punto<float> > graph(direct);
+    ed::Grafo <ed::Punto<float> > graph2(direct);
+    ed::Grafo <ed::Punto<float> > graph3(direct);
     do{
         // Se elige la opción del menún
         opcion = ed::menu();        
@@ -194,81 +201,159 @@ int main(){
                     break;
 
             case 3: 
-                    
+                    PLACE(2,2);
+                    std::cout<<BIPURPLE<<"[3] Grabar las matrices de adyacencia en un fichero"<<RESET<<std::endl;
+                    std::cout<<BIBLUE<<"Introduce el nombre del fichero para la Matriz de Adyacencias: "<<BIYELLOW;
+                    std::cin>>nombreFichero2;
+                    std::cout<<RESET<<std::endl;
+                    std::cout<<BIYELLOW<<"De que forma quiere exportar la matriz de adyacencias: \n"<<BICYAN<<"con etiquetas (1) "<<BIYELLOW<<"o"<<BICYAN<<" sin etiquetas (2)"<<RESET<<BIBLUE<<std::endl;
+                    std::cout<<"Elección: ";
+                    std::cin>>control;
+                    std::cout<<RESET<<std::endl;
+                    if(control==1){
+                        graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1);
+                        graph.matricesAFichero(nombreFichero2, graph.getVectorVertices(), graph.getMatriz(), graph.getVectorEtiquetas().size()+1);
+                        graph.crearMatrizSinLabels(graph.getVectorVertices(), graph.getVectorLado());
+                        std::cout<<BIGREEN<<"Se ha creado el fichero de la Matriz de Adyacencias con etiquetas correctamente"<<RESET<<std::endl;
+                    }else{
+                        graph.crearMatrizSinLabels(graph.getVectorVertices(), graph.getVectorLado());
+                        graph.matricesAFicheroAlgoritmos(nombreFichero2, graph.getVectorVertices(), graph.getMatrizWLabels());
+                        std::cout<<BIGREEN<<"Se ha creado el fichero de la Matriz de Adyacencias sin etiquetas correctamente"<<RESET<<std::endl;
+                    }
+
+                    std::cout<<BIBLUE<<"Introduce el nombre del fichero para imprimir el Algoritmo de Prim: "<<BIYELLOW;
+                    std::cin>>nombreFichero2;
+                    std::cout<<RESET<<std::endl;
+                    graph2.setMatrizWLabels(ed::prim(graph, graph2));
+                    graph.matricesAFicheroAlgoritmos(nombreFichero2, graph.getVectorVertices(), graph2.getMatrizWLabels());
+                    std::cout<<BIGREEN<<"Se ha creado el fichero del Algoritmo de Prim correctamente"<<RESET<<std::endl;
+
+                    std::cout<<BIBLUE<<"Introduce el nombre del fichero para imprimir el Algoritmo de Kruskal: "<<BIYELLOW;
+                    std::cin>>nombreFichero2;
+                    std::cout<<RESET<<std::endl;
+                    graph2.setMatrizWLabels(ed::kruskal(graph, graph2));
+                    graph.matricesAFicheroAlgoritmos(nombreFichero2, graph.getVectorVertices(), graph2.getMatrizWLabels());
+                    std::cout<<BIGREEN<<"Se ha creado el fichero del Algoritmo de Kruskal correctamente"<<RESET<<std::endl;
+                    std::cin.ignore();
                     break;
 
             //////////////////////////////////////////////////////////////////////////////
             case 4: 
                     std::cout <<BIPURPLE<< "[4] Mostrar los vertices y lados del Grafo" <<RESET<< std::endl;
-                    std::cout <<BIYELLOW<< "Estos son los vertices del Grafo" <<RESET<< std::endl;
-                    graph.imprimirVertices();
-                    PLACE(25,1);
-                    std::cout << "Pulse ";
-                    std::cout << BIGREEN;
-                    std::cout << "ENTER";
-                    std::cout << RESET;
-                    std::cout << " para mostrar la siguiente ";
-                    std::cout << INVERSE;
-                    std::cout << "los lados"; 
-                    std::cout << RESET;
+                    if(graph.getVectorVertices().size()<2 && graph.getVectorLado().size()<1){
+                        std::cout<<BIRED<<"No hay vertices o lados para mostrar"<<RESET<<std::endl;
+                        break;
+                    }else{
+                        if(graph.getVectorVertices().size()>0){
+                            std::cout <<BIYELLOW<< "Estos son los vertices del Grafo" <<RESET<< std::endl;
+                            graph.imprimirVertices();
+                            PLACE(25,1);
+                            std::cout << "Pulse ";
+                            std::cout << BIGREEN;
+                            std::cout << "ENTER";
+                            std::cout << RESET;
+                            std::cout << " para mostrar la siguiente ";
+                            std::cout << INVERSE;
+                            std::cout << "los lados"; 
+                            std::cout << RESET;
 
-                    // Pausa
-                    std::cin.ignore();
-                    PLACE(2,1);
-                    std::cout << CLEAR_SCREEN;
-                    std::cout <<BIYELLOW<< "Estos son los lados del Grafo" <<RESET<< std::endl;
-                    graph.imprimirLados();
-                    PLACE(25,1);
-                    std::cout << "Pulse ";
-                    std::cout << BIGREEN;
-                    std::cout << "ENTER";
-                    std::cout << RESET;
-                    std::cout << " para mostrar la siguiente ";
-                    std::cout << INVERSE;
-                    std::cout << "el menú"; 
-                    std::cout << RESET;
-
-                    // Pausa
-                    std::cin.ignore();
-                    PLACE(2,1);
-                    std::cout << CLEAR_SCREEN;
-                    break;
+                            // Pausa
+                            std::cin.ignore();
+                            PLACE(2,1);
+                            std::cout << CLEAR_SCREEN;
+                        }
+                        if(graph.getVectorLado().size()>0){
+                            std::cout <<BIYELLOW<< "Estos son los lados del Grafo" <<RESET<< std::endl;
+                            graph.imprimirLados();
+                            PLACE(25,1);
+                            std::cout << "Pulse ";
+                            std::cout << BIGREEN;
+                            std::cout << "ENTER";
+                            std::cout << RESET;
+                            std::cout << " para mostrar la siguiente ";
+                            std::cout << INVERSE;
+                            std::cout << "el menú"; 
+                            std::cout << RESET;
+                            PLACE(2,1);
+                            break;
+                        }
+                    }
 
             case 5: 
                     std::cout<<BIPURPLE<< "[5] Mostrar la Matriz de Adyacencias: " <<RESET<< std::endl;
-                    graph.setMatriz(graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1));
-                    graph.imprimirMatriz(graph.getVectorVertices(), graph.getMatriz(), graph.getVectorEtiquetas().size()+1);
-                    break;
+                    if(graph.getVectorVertices().size()<2 && graph.getVectorLado().size()<1){
+                        std::cout<<BIRED<<"No hay suficientes vertices y lados como para crear una matriz"<<RESET<<std::endl;
+                        break;
+                    }else{
+                        graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1);
+                        graph.crearMatrizSinLabels(graph.getVectorVertices(), graph.getVectorLado());
+                        graph.imprimirMatriz(graph.getVectorVertices(), graph.getMatriz(), graph.getVectorEtiquetas().size()+1);
+                        val=true;
+                        break;
+                    }
 
 
             //////////////////////////////////////////////////////////////////////////////
             case 6: 
-                    std::cout <<BIPURPLE<< "[6] Mostrar estadisticas de una fecha"<<RESET<< std::endl;
+                std::cout <<BIPURPLE<<"[6] Algoritmo de Prim"<<RESET<< std::endl;
+                if(val==false){
+                    std::cout<<BIRED<<"Matriz de Adyacencias no creada aún"<<RESET<<std::endl;
                     break;
+                }else{
+                    graph2.setMatrizWLabels(ed::prim(graph, graph2));
+                    graph.imprimirMatrizSinLabels(graph.getVectorVertices(), graph2.getMatrizWLabels());
+                    break;
+                }
 
             case 7: 
-                    std::cout <<BIPURPLE<< "[7] Mostrar estadisticas de un mes"<<RESET<< std::endl;
+                std::cout <<BIPURPLE<< "[7] Algoritmo de Kruskal"<<RESET<< std::endl;
+                if(val==false){
+                    std::cout<<BIRED<<"Matriz de Adyacencias no creada aún"<<RESET<<std::endl;
                     break;
-
+                }else{
+                    graph2.setMatrizWLabels(ed::kruskal(graph, graph2));
+                    graph.imprimirMatrizSinLabels(graph.getVectorVertices(), graph2.getMatrizWLabels());
+                    break;
+                }
 
             case 8: 
-                    std::cout <<BIPURPLE<< "[8] Borrar todas las mediciones del montículo" <<RESET<<std::endl;
+                    std::cout <<BIPURPLE<< "[8] Borrar un Vertice" <<RESET<<std::endl;
+                    //graph.removeVertex();
                     break;
 
             //////////////////////////////////////////////////////////////////////////////
             case 9: 
-                    std::cout <<BIPURPLE<< "[9] Consultar el top\n" <<RESET<< std::endl;
+                    std::cout <<BIPURPLE<< "[9] Borrar todos los vertices y lados" <<RESET<< std::endl;
                     break;
 
             case 10: 
-                    std::cout <<BIPURPLE<< "[10] Insertar una medición" <<RESET<< std::endl;
+                    std::cout <<BIPURPLE<< "[10] Insertar una Vertice" <<RESET<< std::endl;
                     break;
 
             case 11: 
-                    std::cout <<BIPURPLE<< "[11] Modificar la cima" <<RESET<<std::endl;
+                    std::cout <<BIPURPLE<< "[11] Insertar un Lado" <<RESET<<std::endl;
                     break;
             case 12: 
-                    std::cout <<BIPURPLE<< "[12] Eliminar la cima" <<RESET<<std::endl;
+                    std::cout <<BIPURPLE<< "[12] Generar el Grafo en PNG" <<RESET<<std::endl;
+                    std::cout<<BIBLUE<<"Introduce el nombre del fichero acabado en .dot: ";
+                    nombreFichero="grafoDirigido.dot";
+                    std::cout<<RESET<<std::endl;
+                    l=graph.getVectorLado();
+                    png.open(nombreFichero.c_str());
+                    if(png.is_open()){
+                        png<<l;               
+                        png.close();
+                        value=true;
+                    }else
+                        value=false;
+                    
+                    if(value){
+                        std::cout<<BIGREEN<<"\nEl fichero .dot ha sido generado con exito, debe ejecutar el comando que se \nadjunta en el fichero comando.txt situado en el directorio"<<RESET<<std::endl;
+                    }
+                    else{
+                        std::cout<<BIRED<<"Error al cargar el fichero"<<RESET<<std::endl;
+                        std::cin.ignore();
+                    }
                     break;
             //////////////////////////////////////////////////////////////////////////////
             default:
@@ -301,123 +386,4 @@ int main(){
       }while(opcion!=0);
 
     return 0;
-
-
- //float dist;
-   // unsigned int i=1;
-    
-    
-    //ed::Punto <float> punto(0.0, 0.0);
-    //ed::Punto <float> punto2(0.0, 1.0);
-    //ed::Punto <float> punto3(3.0, 1.0);
-    //ed::Punto <float> punto4(3.0, 3.0);
-    //ed::Punto <float> punto5(8.0, 1.0);
-    //ed::Vertice <ed::Punto<float> > Vertice1(-1);
-    //ed::Vertice <ed::Punto<float> > Vertice2(-1);
-    //ed::Vertice <ed::Punto<float> > Vertice3(-1);
-    //ed::Vertice <ed::Punto<float> > Vertice4(-1);
-    //ed::Vertice <ed::Punto<float> > Vertice5(-1);
-    
-    //unsigned int i, j;
-
-   //anadirVertices(nombreFichero, graph);
-
-
-    //graph.addVertex(punto, Vertice1);
-    //graph.addVertex(punto2, Vertice2);
-    //graph.addVertex(punto3, Vertice3);
-    //graph.addVertex(punto4, Vertice4);
-    //graph.addVertex(punto5, Vertice5);
-    //std::cout<<graph.getVectorVertices().size()<<std::endl;
-    
-   /*
-    dist=ed::calcularDistanciaEuclidea(punto.getX(), punto.getY(), punto2.getX(), punto2.getY());
-
-    ed::Lado <ed::Punto<float> > edge(dist);
-    graph.addEdge(Vertice1.getLabel(), Vertice2.getLabel(), edge, dist);
-
-    edge.imprimirLado();
-
-    dist=ed::calcularDistanciaEuclidea(punto.getX(), punto.getY(), punto3.getX(), punto3.getY());
-
-    ed::Lado <ed::Punto<float> > edge1(dist);
-    graph.addEdge(Vertice1.getLabel(), Vertice3.getLabel(), edge1, dist);
-
-    edge1.imprimirLado();
-
-    dist=ed::calcularDistanciaEuclidea(punto.getX(), punto.getY(), punto4.getX(), punto4.getY());
-
-    ed::Lado <ed::Punto<float> > edge2(dist);
-
-    graph.addEdge(Vertice1.getLabel(), Vertice4.getLabel(), edge2, dist);
-
-    edge2.imprimirLado();
-
-
-    dist=ed::calcularDistanciaEuclidea(punto.getX(), punto.getY(), punto5.getX(), punto5.getY());
-
-    ed::Lado <ed::Punto<float> > edge3(dist);
-
-    graph.addEdge(Vertice1.getLabel(), Vertice5.getLabel(), edge3, dist);
-
-    edge3.imprimirLado();
-
-    dist=ed::calcularDistanciaEuclidea(punto2.getX(), punto2.getY(), punto3.getX(), punto3.getY());
-
-    ed::Lado <ed::Punto<float> > edge4(dist);
-
-    graph.addEdge(Vertice2.getLabel(), Vertice3.getLabel(), edge4, dist);
-
-    edge4.imprimirLado(); //
-
-    dist=ed::calcularDistanciaEuclidea(punto2.getX(), punto2.getY(), punto4.getX(), punto4.getY());
-
-    ed::Lado <ed::Punto<float> > edge5(dist);
-
-    graph.addEdge(Vertice2.getLabel(), Vertice4.getLabel(), edge5, dist);
-
-    edge5.imprimirLado();
-
-      dist=ed::calcularDistanciaEuclidea(punto2.getX(), punto2.getY(), punto5.getX(), punto5.getY());
-
-    ed::Lado <ed::Punto<float> > edge6(dist);
-
-    graph.addEdge(Vertice2.getLabel(), Vertice5.getLabel(), edge6, dist);
-
-    edge6.imprimirLado();//
-
-      dist=ed::calcularDistanciaEuclidea(punto3.getX(), punto3.getY(), punto4.getX(), punto4.getY());
-
-    ed::Lado <ed::Punto<float> > edge7(dist);
-
-    graph.addEdge(Vertice3.getLabel(), Vertice4.getLabel(), edge7, dist);
-
-    edge7.imprimirLado();
-
-
-  dist=ed::calcularDistanciaEuclidea(punto3.getX(), punto3.getY(), punto5.getX(), punto5.getY());
-
-    ed::Lado <ed::Punto<float> > edge8(dist);
-
-    graph.addEdge(Vertice3.getLabel(), Vertice5.getLabel(), edge8, dist);
-
-    edge8.imprimirLado();
-
-  dist=ed::calcularDistanciaEuclidea(punto4.getX(), punto4.getY(), punto5.getX(), punto5.getY());
-
-    ed::Lado <ed::Punto<float> > edge9(dist);
-
-    graph.addEdge(Vertice4.getLabel(), Vertice5.getLabel(), edge9, dist);
-
-    edge9.imprimirLado();
-
-   
-    matriz=graph.prim();
-
-    graph.imprimirMatrizSinLabels(graph.getVectorVertices(), matriz);
-
-    matriz=graph.kruskal();
-
-    graph.imprimirMatrizSinLabels(graph.getVectorVertices(), matriz);
-*/
 }
