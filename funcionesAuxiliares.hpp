@@ -32,8 +32,13 @@ namespace ed{
 		\return  Devuelve el número de opción elegido
 	*/
  	int menu();
- 	std::vector<std::vector<float> > prim(Grafo <Punto<float> > graph, ed::Grafo <ed::Punto<float> > graph2);
- 	std::vector<std::vector<float> > kruskal(Grafo <Punto<float> > graph, ed::Grafo <ed::Punto<float> > graph2);
+ 	std::vector<std::vector<float> > prim(Grafo <Punto<float> > &graph, ed::Grafo <ed::Punto<float> > &graph2);
+ 	std::vector<std::vector<float> > kruskal(Grafo <Punto<float> > &graph, ed::Grafo <ed::Punto<float> > &graph2);
+ 	void cargarFichero(ed::Grafo <ed::Punto<float> > &graph);
+ 	bool grabarFichero(ed::Grafo <ed::Punto<float> > &graph);
+ 	void generarPNGPrim(char *nombreFichero2, std::vector<float> padre, std::vector<float> hijo, std::vector<float> coste);
+ 	void generarPNGKruskal(char *nombreFichero2, std::vector<float> padre, std::vector<float> hijo, std::vector<float> coste);
+
 
 } // Fin del espacio de nombre de la asignatura: ed
 

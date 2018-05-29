@@ -52,6 +52,10 @@ class Grafo{
 		
 		std::vector<std::vector<float> > _matriz;
 		std::vector<std::vector<float> > _matrizwLabels;
+		std::vector<float> _padre;
+		std::vector<float> _hijo;
+		std::vector<float> _coste;
+		float _max;
 
 		bool _dirigido;
 
@@ -74,7 +78,7 @@ class Grafo{
 		std::vector<std::vector<float> > getMatriz(){return _matriz;}
 		std::vector<std::vector<float> > getMatrizWLabels(){return _matrizwLabels;}
 		
-		bool getDirected(){return _dirigido;}
+		bool getDirected()const {return _dirigido;}
 
 		bool adjacent(int const u, int const v, std::vector<Lado<T> > l){
 			typename std::vector<Lado<T> >::const_iterator otEdge;
@@ -85,6 +89,8 @@ class Grafo{
 				}
 				return false;
 		}
+
+		inline float getMax()const{return _max;}
 
 		float getVectorCoste(std::vector<Lado<T> >l, int u, int v){
 			typename std::vector<Lado<T> >::iterator otEdge;
@@ -97,7 +103,7 @@ class Grafo{
 			return 0;
 		}
 
-		inline bool hasCurrVertex(Vertice<T> &v){
+		inline bool hasCurrVertex(Vertice<T> const &v){
 			typename std::vector<Vertice<T> >::iterator ot;
 			for(ot=_vectorVertices.begin();ot!=_vectorVertices.end();ot++){
 				if(ot->getPunto().getX()==v.getPunto().getX() && ot->getPunto().getY()==v.getPunto().getY())
@@ -106,7 +112,7 @@ class Grafo{
 				return false;		
 		}
 
-		inline int devolverEtiqueta(Vertice<T> &v){
+		inline int devolverEtiqueta(Vertice<T> const &v){
 			typename std::vector<Vertice<T> >::iterator ot;
 			for(ot=_vectorVertices.begin();ot!=_vectorVertices.end();ot++){
 				if(ot->getPunto().getX()==v.getPunto().getX() && ot->getPunto().getY()==v.getPunto().getY())
@@ -115,7 +121,7 @@ class Grafo{
 				return 0;		
 		}
 
-		inline Vertice<T> currVertex(){
+		inline Vertice<T> currVertex()const{
 			#ifndef NDEBUG
 				assert(hasCurrVertex());
 			#endif
@@ -123,14 +129,14 @@ class Grafo{
 			return *it;
 		}
 
-		inline bool hasCurrEdge(){
+		inline bool hasCurrEdge()const{
 			if(hasEdge(itEdge))
 				return true;
 			else
 				return false;	
 		}
 		
-		inline Lado<T> currEdge(){
+		inline Lado<T> currEdge()const{
 			#ifndef NDEBUG
 				assert(hasCurrEdge());
 			#endif
@@ -149,6 +155,31 @@ class Grafo{
 			#endif
 
 			return _label.at(u.getLabel());
+		}
+
+		float recogerSumaCostes(float minMax)const{
+			return minMax;
+		}
+
+		std::vector<Vertice<T> > getVectorVertices()const{return _vectorVertices;}
+
+		std::vector<Lado<T> > getVectorLado()const{return _vectorLado;}
+		
+		std::vector<int> getVectorEtiquetas()const{return _label;}
+
+		std::vector<float> getPadre()const{return _padre;}
+
+		std::vector<float> getHijo()const{return _hijo;}
+
+		std::vector<float> getCoste()const{return _coste;}
+
+	//	typename std::vector<Vertice<T> >::iterator getIteradorVertice(){return *it;}
+		typename std::vector<Lado<T> >::iterator getIteradorLado(){return itEdge;}
+
+		void recogerCamino(std::vector<float> padre, std::vector<float> hijo, std::vector<float> coste){
+			for(unsigned int i=0; i<padre.size();i++){
+				std::cout<<BIBLUE<<"("<<padre[i]<<", "<<hijo[i]<<")"<<"   "<<coste[i]<<std::endl;
+			}
 		}
 
 		void crearMatriz(std::vector<Vertice<T> >v, std::vector<Lado<T> >l, unsigned int i){
@@ -212,18 +243,16 @@ class Grafo{
 			}
 		}
 
-		std::vector<Vertice<T> > getVectorVertices(){return _vectorVertices;}
-
-		std::vector<Lado<T> > getVectorLado(){return _vectorLado;}
 		
-		std::vector<int> getVectorEtiquetas(){return _label;}
-
-	//	typename std::vector<Vertice<T> >::iterator getIteradorVertice(){return *it;}
-		typename std::vector<Lado<T> >::iterator getIteradorLado(){return itEdge;}
 
 		//! Modificadores públicos del grafo de la clase Grafo
 		void setMatriz(std::vector<std::vector<float> > matriz){_matriz=matriz;}
 		void setMatrizWLabels(std::vector<std::vector<float> > matrizwLabels){_matrizwLabels=matrizwLabels;}
+
+		void setPadre(std::vector<float>  &padre){_padre=padre;}
+		void setHijo(std::vector<float>  &hijo){_hijo=hijo;}
+		void setCoste(std::vector<float>  &coste){_coste=coste;}
+		void setMax(float &max){_max=max;}
 
 		void setDirected(bool dirigido){_dirigido=dirigido;}
 

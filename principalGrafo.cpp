@@ -32,19 +32,16 @@
     \return  int
 */
 int main(){
-    float x1, y1, x2, y2, f;
+    char nombreFichero2[10];
     std::ifstream grap;
     std::ofstream png;
     bool value;
     std::vector<std::vector<float> > matriz;
     std::vector<ed::Lado<ed::Punto<float> > > l;
-    int control;
-
-    int opcion, opcion2;
+    int opcion;
     std::string nombreFichero;
     int directed;
-    bool direct, val=false;
-    char nombreFichero2[10];
+    bool direct, val=false, p=false, k=false;
 
 
     std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
@@ -91,230 +88,112 @@ int main(){
            ///////////////////////////////////////////////////////////////////
 
             case 1: 
-                    std::cout<<BIPURPLE<< "[1] Comprobar si el Grafo tiene vertices"<<RESET<< std::endl;
-                    if(graph.getVectorVertices().size()==0)
-                        std::cout<<ONIRED<<BIYELLOW<<"El Grafo está vacío"<<RESET<<std::endl;
-                    else
-                        std::cout<<BIGREEN<<"Al menos hay un Verice en el Grafo"<<RESET<<std::endl;
-                    break;
+                std::cout<<BIPURPLE<< "[1] Comprobar si el Grafo tiene vertices"<<RESET<< std::endl;
+                if(graph.getVectorVertices().size()==0)
+                    std::cout<<ONIRED<<BIYELLOW<<"El Grafo está vacío"<<RESET<<std::endl;
+                else
+                    std::cout<<BIGREEN<<"Al menos hay un Verice en el Grafo"<<RESET<<std::endl;
+                break;
 
             //////////////////////////////////////////////////////////////////////////////
             case 2: 
-                    PLACE(1,1);
-                    std::cout <<BIPURPLE<< "[2] Cargar el grafo desde ficheros" <<RESET<< std::endl;
-        
-                        std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"1"<<BIGREEN<<" para cargar los vertices en el grafo desde el fichero" <<RESET;
-                        std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"2"<<BIGREEN<<" para cargar los lados en el grafo desde el fichero" <<RESET;
-                        std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"3"<<BIGREEN<<" para cargar los vertices y los lados en el grafo desde el fichero" <<RESET;
-                        std::cout <<BIBLUE<<"\n\nIntroduce la opción deseada: "<<BIYELLOW;
-                        std::cin>>opcion2;
-                        if(opcion2>0 && opcion<4){
-                            std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
-                            switch(opcion2){
-                                case 1:
-                                    PLACE(2,2);
-                                    std::cout <<BIRED<<"ATENCION!!! NO INTRODUZCA LADOS" <<RESET<< std::endl;
-                                    std::cout<<BIBLUE<<"Introduce el nombre del fichero: ";
-                                    std::cin>>nombreFichero;
-                                    std::cout<<RESET<<std::endl;
-                                    std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
-                                    PLACE(1,1);
-                                    grap.open(nombreFichero.c_str());
-                                    if(grap.is_open()){
-                                        while(!grap.eof()){
-                                            grap>>x1>>y1;
-                                            ed::Punto<float> punto(x1, y1);
-                                            if(!grap.eof()){
-                                                graph.addVertex(punto);
-                                            }
-                                        }
-                                    grap.close();
-                                    value=true;
-                                    }else
-                                        value=false;
-                                    
-                                    if(value){
-                                        std::cout<<BIGREEN<<"\nEl fichero ha sido cargado con exito"<<RESET<<std::endl;
-                                        std::cin.ignore();
-                                    }
-                                    else{
-                                        std::cout<<BIRED<<"Error al cargar el fichero"<<RESET<<std::endl;
-                                        std::cin.ignore();
-                                    }
-                                    break;
-                                
-                                case 2:
-                                    PLACE(2,2);
-                                    if(graph.getVectorVertices().size()==0){
-                                        std::cout<<ONIRED<<BIYELLOW<<"El Grafo no tiene vertices, introduzca primero dos vertices como mínimo"<<RESET<<std::endl;
-                                        std::cin.ignore();
-                                    }
-                                    else{
-                                        std::cout <<BIRED<<"ATENCION!!! NO INTRODUZCA VERTICES" <<RESET<< std::endl;
-                                        std::cout<<BIBLUE<<"Introduce el nombre del fichero: ";
-                                        std::cin>>nombreFichero;
-                                        std::cout<<RESET<<std::endl;
-                                        std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
-                                        PLACE(1,1);
-                                        grap.open(nombreFichero.c_str());
-                                        if(grap.is_open()){
-                                            while(!grap.eof()){
-                                                grap>>x1>>y1>>x2>>y2;
-                                                ed::Punto<float> punto1(x1, y1);
-                                                ed::Punto<float> punto2(x2, y2);
-                                                f=ed::calcularDistanciaEuclidea(punto1.getX(), punto1.getY(), punto2.getX(), punto2.getY());
-                                                ed::Vertice<ed::Punto<float> > v1(punto1, -1);
-                                               ed::Vertice<ed::Punto<float> > v2(punto2, -1);
-                                               ed::Lado<ed::Punto<float> >Lado(f);
+                std::cout<<BIPURPLE<<"[2] Cargar el Grafo de vertices y/o lados desde ficheros"<<RESET<<std::endl;
+                ed::cargarFichero(graph);
+                break;
 
-                                                if(graph.devolverEtiqueta(v1)!=0 && graph.devolverEtiqueta(v2)!=0){
-                                                    if(!grap.eof()){
-                                                        graph.addEdge(graph.devolverEtiqueta(v1), graph.devolverEtiqueta(v2), Lado,  f);
-                                                    }
-                                                }
-                                            }
-                                        grap.close();
-                                        value=true;
-                                        }else
-                                            value=false;
-                                        
-                                        if(value){
-                                            std::cout<<BIGREEN<<"\nEl fichero ha sido cargado con exito"<<RESET<<std::endl;
-                                            std::cin.ignore();
-                                        }
-                                        else{
-                                            std::cout<<BIRED<<"Error al cargar el fichero"<<RESET<<std::endl;
-                                            std::cin.ignore();
-                                        }
-                                    }
-                                    break;
-                                
-                                case 3:
-
-                                    break;
-                            }
-                        }else{
-                            std::cout<<BIRED<<"OPCIÓN "<<directed<<" NO VALIDA!!"<<RESET<<std::endl;
-                            std::cin.ignore();
-                            break;
-                        }
-                    break;
-
-            case 3: 
-                    PLACE(2,2);
-                    std::cout<<BIPURPLE<<"[3] Grabar las matrices de adyacencia en un fichero"<<RESET<<std::endl;
-                    std::cout<<BIBLUE<<"Introduce el nombre del fichero para la Matriz de Adyacencias: "<<BIYELLOW;
-                    std::cin>>nombreFichero2;
-                    std::cout<<RESET<<std::endl;
-                    std::cout<<BIYELLOW<<"De que forma quiere exportar la matriz de adyacencias: \n"<<BICYAN<<"con etiquetas (1) "<<BIYELLOW<<"o"<<BICYAN<<" sin etiquetas (2)"<<RESET<<BIBLUE<<std::endl;
-                    std::cout<<"Elección: ";
-                    std::cin>>control;
-                    std::cout<<RESET<<std::endl;
-                    if(control==1){
-                        graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1);
-                        graph.matricesAFichero(nombreFichero2, graph.getVectorVertices(), graph.getMatriz(), graph.getVectorEtiquetas().size()+1);
-                        graph.crearMatrizSinLabels(graph.getVectorVertices(), graph.getVectorLado());
-                        std::cout<<BIGREEN<<"Se ha creado el fichero de la Matriz de Adyacencias con etiquetas correctamente"<<RESET<<std::endl;
-                    }else{
-                        graph.crearMatrizSinLabels(graph.getVectorVertices(), graph.getVectorLado());
-                        graph.matricesAFicheroAlgoritmos(nombreFichero2, graph.getVectorVertices(), graph.getMatrizWLabels());
-                        std::cout<<BIGREEN<<"Se ha creado el fichero de la Matriz de Adyacencias sin etiquetas correctamente"<<RESET<<std::endl;
-                    }
-
-                    std::cout<<BIBLUE<<"Introduce el nombre del fichero para imprimir el Algoritmo de Prim: "<<BIYELLOW;
-                    std::cin>>nombreFichero2;
-                    std::cout<<RESET<<std::endl;
-                    graph2.setMatrizWLabels(ed::prim(graph, graph2));
-                    graph.matricesAFicheroAlgoritmos(nombreFichero2, graph.getVectorVertices(), graph2.getMatrizWLabels());
-                    std::cout<<BIGREEN<<"Se ha creado el fichero del Algoritmo de Prim correctamente"<<RESET<<std::endl;
-
-                    std::cout<<BIBLUE<<"Introduce el nombre del fichero para imprimir el Algoritmo de Kruskal: "<<BIYELLOW;
-                    std::cin>>nombreFichero2;
-                    std::cout<<RESET<<std::endl;
-                    graph2.setMatrizWLabels(ed::kruskal(graph, graph2));
-                    graph.matricesAFicheroAlgoritmos(nombreFichero2, graph.getVectorVertices(), graph2.getMatrizWLabels());
-                    std::cout<<BIGREEN<<"Se ha creado el fichero del Algoritmo de Kruskal correctamente"<<RESET<<std::endl;
-                    std::cin.ignore();
-                    break;
+            case 3:
+                PLACE(1,1);
+                std::cout<<BIPURPLE<<"[3] Grabar las matrices de adyacencia en un fichero"<<RESET<<std::endl;
+                if(graph.getVectorVertices().size()>0){
+                    val=ed::grabarFichero(graph);
+                    k=val;
+                    p=val;
+                }else{
+                    std::cout<<ONIRED<<BIYELLOW<<"El Grafo está vacío"<<RESET<<std::endl;
+                }
+                break;
 
             //////////////////////////////////////////////////////////////////////////////
             case 4: 
-                    std::cout <<BIPURPLE<< "[4] Mostrar los vertices y lados del Grafo" <<RESET<< std::endl;
-                    if(graph.getVectorVertices().size()<2 && graph.getVectorLado().size()<1){
-                        std::cout<<BIRED<<"No hay vertices o lados para mostrar"<<RESET<<std::endl;
-                        break;
-                    }else{
-                        if(graph.getVectorVertices().size()>0){
-                            std::cout <<BIYELLOW<< "Estos son los vertices del Grafo" <<RESET<< std::endl;
-                            graph.imprimirVertices();
-                            PLACE(25,1);
-                            std::cout << "Pulse ";
-                            std::cout << BIGREEN;
-                            std::cout << "ENTER";
-                            std::cout << RESET;
-                            std::cout << " para mostrar la siguiente ";
-                            std::cout << INVERSE;
-                            std::cout << "los lados"; 
-                            std::cout << RESET;
+                std::cout <<BIPURPLE<< "[4] Mostrar los vertices y lados del Grafo" <<RESET<< std::endl;
+                if(graph.getVectorVertices().size()<2 && graph.getVectorLado().size()<1){
+                    std::cout<<ONIRED<<BIYELLOW<<"No hay vertices o lados para mostrar"<<RESET<<std::endl;
+                }else{
+                    if(graph.getVectorVertices().size()>0){
+                        PLACE(1,1);
+                        std::cout <<BIYELLOW<< "Estos son los vertices del Grafo" <<RESET<< std::endl;
+                        graph.imprimirVertices();
+                        PLACE(25,1);
+                        std::cout << "Pulse ";
+                        std::cout << BIGREEN;
+                        std::cout << "ENTER";
+                        std::cout << RESET;
+                        std::cout << " para mostrar la siguiente ";
+                        std::cout << INVERSE;
+                        std::cout << "los lados"; 
+                        std::cout << RESET;
 
-                            // Pausa
-                            std::cin.ignore();
-                            PLACE(2,1);
-                            std::cout << CLEAR_SCREEN;
-                        }
-                        if(graph.getVectorLado().size()>0){
-                            std::cout <<BIYELLOW<< "Estos son los lados del Grafo" <<RESET<< std::endl;
-                            graph.imprimirLados();
-                            PLACE(25,1);
-                            std::cout << "Pulse ";
-                            std::cout << BIGREEN;
-                            std::cout << "ENTER";
-                            std::cout << RESET;
-                            std::cout << " para mostrar la siguiente ";
-                            std::cout << INVERSE;
-                            std::cout << "el menú"; 
-                            std::cout << RESET;
-                            PLACE(2,1);
-                            break;
-                        }
+                        // Pausa
+                        std::cin.ignore();
+                        PLACE(2,1);
+                        std::cout << CLEAR_SCREEN;
                     }
+                    if(graph.getVectorLado().size()>0){
+                        std::cout <<BIYELLOW<< "Estos son los lados del Grafo" <<RESET<< std::endl;
+                        graph.imprimirLados();
+                        PLACE(25,1);
+                        std::cout << "Pulse ";
+                        std::cout << BIGREEN;
+                        std::cout << "ENTER";
+                        std::cout << RESET;
+                        std::cout << " para mostrar la siguiente ";
+                        std::cout << INVERSE;
+                        std::cout << "el menú"; 
+                        std::cout << RESET;
+                        PLACE(2,1);
+                    }
+                }
+                break;
 
             case 5: 
                     std::cout<<BIPURPLE<< "[5] Mostrar la Matriz de Adyacencias: " <<RESET<< std::endl;
                     if(graph.getVectorVertices().size()<2 && graph.getVectorLado().size()<1){
-                        std::cout<<BIRED<<"No hay suficientes vertices y lados como para crear una matriz"<<RESET<<std::endl;
-                        break;
+                        std::cout<<ONIRED<<BIYELLOW<<"No hay suficientes vertices y lados como para crear una matriz"<<RESET<<std::endl;
                     }else{
                         graph.crearMatriz(graph.getVectorVertices(), graph.getVectorLado(), graph.getVectorEtiquetas().size()+1);
                         graph.crearMatrizSinLabels(graph.getVectorVertices(), graph.getVectorLado());
                         graph.imprimirMatriz(graph.getVectorVertices(), graph.getMatriz(), graph.getVectorEtiquetas().size()+1);
                         val=true;
-                        break;
                     }
+                    break;
 
 
             //////////////////////////////////////////////////////////////////////////////
             case 6: 
                 std::cout <<BIPURPLE<<"[6] Algoritmo de Prim"<<RESET<< std::endl;
                 if(val==false){
-                    std::cout<<BIRED<<"Matriz de Adyacencias no creada aún"<<RESET<<std::endl;
-                    break;
+                    std::cout<<ONIRED<<BIYELLOW<<"Matriz de Adyacencias no creada aún"<<RESET<<std::endl;
                 }else{
                     graph2.setMatrizWLabels(ed::prim(graph, graph2));
                     graph.imprimirMatrizSinLabels(graph.getVectorVertices(), graph2.getMatrizWLabels());
-                    break;
+                    graph.recogerCamino(graph.getPadre(), graph.getHijo(), graph.getCoste());
+                    std::cout<<BIWHITE<<"El coste mínimo del arbol abarcador de Prim es: "<<graph.getMax()<<RESET<<std::endl;
+                    p=true;
                 }
+                break;
 
             case 7: 
                 std::cout <<BIPURPLE<< "[7] Algoritmo de Kruskal"<<RESET<< std::endl;
                 if(val==false){
-                    std::cout<<BIRED<<"Matriz de Adyacencias no creada aún"<<RESET<<std::endl;
-                    break;
+                    std::cout<<ONIRED<<BIYELLOW<<"Matriz de Adyacencias no creada aún"<<RESET<<std::endl;
                 }else{
                     graph2.setMatrizWLabels(ed::kruskal(graph, graph2));
                     graph.imprimirMatrizSinLabels(graph.getVectorVertices(), graph2.getMatrizWLabels());
-                    break;
+                    graph.recogerCamino(graph.getPadre(), graph.getHijo(), graph.getCoste());
+                    std::cout<<BIWHITE<<"El coste mínimo del arbol abarcador de Kruskal es: "<<graph.getMax()<<RESET<<std::endl;
+                    k=true;
                 }
+                break;
 
             case 8: 
                     std::cout <<BIPURPLE<< "[8] Borrar un Vertice" <<RESET<<std::endl;
@@ -324,6 +203,15 @@ int main(){
             //////////////////////////////////////////////////////////////////////////////
             case 9: 
                     std::cout <<BIPURPLE<< "[9] Borrar todos los vertices y lados" <<RESET<< std::endl;
+                    if(graph.getVectorVertices().size()==0)
+                        std::cout<<ONIRED<<BIYELLOW<<"El Grafo ya está vacío"<<RESET<<std::endl;
+                    else{
+                        std::cout<<BIYELLOW<<"Se va a proceder a eliminar los "<<graph.getVectorVertices().size()<<" vertices y "<<graph.getVectorLado().size()<<" lados del grafo"<<RESET<<std::endl;
+                        graph.removeAllVertexAndEdges();   
+                        std::cout<<BIWHITE<<"Actualmente hay "<<graph.getVectorVertices().size()<<" vertices y "<<graph.getVectorLado().size()<<" lados en el grafo"<<RESET<<std::endl;
+                        if(graph.getVectorVertices().size()==0 && graph.getVectorLado().size()==0)
+                            std::cout<<BIGREEN<<"Se han eliminado los elementos del grafo correctamente"<<RESET<<std::endl;
+                    }               
                     break;
 
             case 10: 
@@ -335,26 +223,43 @@ int main(){
                     break;
             case 12: 
                     std::cout <<BIPURPLE<< "[12] Generar el Grafo en PNG" <<RESET<<std::endl;
-                    std::cout<<BIBLUE<<"Introduce el nombre del fichero acabado en .dot: ";
-                    nombreFichero="grafoDirigido.dot";
-                    std::cout<<RESET<<std::endl;
-                    l=graph.getVectorLado();
-                    png.open(nombreFichero.c_str());
-                    if(png.is_open()){
-                        png<<l;               
-                        png.close();
-                        value=true;
-                    }else
-                        value=false;
-                    
-                    if(value){
-                        std::cout<<BIGREEN<<"\nEl fichero .dot ha sido generado con exito, debe ejecutar el comando que se \nadjunta en el fichero comando.txt situado en el directorio"<<RESET<<std::endl;
-                    }
+                    std::cout<<BIRED<<"SI ES NO DIRIGIDO NO SE DEBE REPRESENTAR EL PNG O SOLO COGER LOS LADOS 1 VEZ NO DE IDA Y VUELTA"<<RESET<<std::endl;
+                    if(graph.getVectorVertices().size()==0)
+                        std::cout<<ONIRED<<BIYELLOW<<"El Grafo está vacío y no se puede generar el PNG del Grafo"<<RESET<<std::endl;
                     else{
-                        std::cout<<BIRED<<"Error al cargar el fichero"<<RESET<<std::endl;
-                        std::cin.ignore();
+                        std::cout<<BIBLUE<<"Introduce el nombre del fichero acabado en .dot: ";
+                        nombreFichero="grafoDirigido.dot";
+                        std::cout<<RESET<<std::endl;
+                        l=graph.getVectorLado();
+                        png.open(nombreFichero.c_str());
+                        if(png.is_open()){
+                            png<<l;               
+                            png.close();
+                            value=true;
+                        }else
+                            value=false;
+                        
+                        if(value){
+                            std::cout<<BIGREEN<<"\nEl fichero .dot ha sido generado con exito, debe ejecutar el comando que se \nadjunta en el fichero comando.txt situado en el directorio"<<RESET<<std::endl;
+                        }
+                        else{
+                            std::cout<<BIRED<<"Error al cargar el fichero"<<RESET<<std::endl;
+                            std::cin.ignore();
+                        }
                     }
                     break;
+
+            case 13:
+                std::cout <<BIBLUE<< "[13] Generar el PNG de Prim y Kruskal"<<RESET<<std::endl;
+                if(p && k){
+                    ed::generarPNGPrim(nombreFichero2, graph.getPadre(), graph.getHijo(), graph.getCoste());
+                    ed::generarPNGKruskal(nombreFichero2, graph.getPadre(), graph.getHijo(), graph.getCoste());
+                    std::cout<<BIYELLOW<<"Deberá ejecutar los comandos almacenados en el fichero comandos del directorio"<<RESET<<std::endl;
+                    std::cin.ignore();
+                }else{
+                    std::cout<<ONIRED<<BIYELLOW<<"Aún no se ha usado el Algoritmo de Prim o el de Kruskal"<<RESET<<std::endl;
+                }
+                break;
             //////////////////////////////////////////////////////////////////////////////
             default:
                 std::cout << BIRED;

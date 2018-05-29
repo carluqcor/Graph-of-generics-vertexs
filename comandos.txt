@@ -1,0 +1,4 @@
+ dot grafoDirigido.dot -o grafoDirigido.png -Tpng -Grankdir=LR 
+ dot Prim.dot -o Prim.png -Tpng -Grankdir=LR 
+ dot Kruskal.dot -o Kruskal.png -Tpng -Grankdir=LR
+
