@@ -178,7 +178,7 @@ int main(){
                 break;
 
             case 8: 
-                    std::cout <<BIPURPLE<< "[8] Borrar lados de un Vertice" <<RESET<<std::endl;
+                    std::cout <<BIPURPLE<< "[8] Borrar los lados de un Vertice" <<RESET<<std::endl;
                     if(graph.getVectorVertices().size()>0){
                         ed::borrarVerticeLados(graph);
                         std::cin.ignore();

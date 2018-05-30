@@ -70,7 +70,7 @@ int ed::menu(){
 	std::cout <<BIGREEN<<"[7] Algoritmo de Kruskal"<<RESET;
 
 	PLACE(posicion++,13);
-	std::cout <<BIGREEN<<"[8] Borrar un Vertice"<<RESET;
+	std::cout <<BIGREEN<<"[8] Borrar un los lados de un Vertice"<<RESET;
 
 	//////////////////////////////////////////////////////////////////////////////
 	posicion++;
