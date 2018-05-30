@@ -2,7 +2,7 @@
    \file  Punto.hpp
    \brief Fichero que contiene el código de las funciones de la clase Grafo
    \author Carlos Luque Córdoba
-   \date   anywhere
+   \date   29/05/2018
 */
 #ifndef _PUNTO_HPP_
 #define _PUNTO_HPP_
@@ -127,9 +127,8 @@ template < class T >
 		}
 
 
-	         //! \name OPERADORES
-	   
-		/*! 
+	    //!Operadores de la clase Punto
+	   	/*! 
 			\fn        inline Punto & operator=(Punto const &q)
 			\brief     Operador que "copia" un Punto en otro Punto
 			\attention Se sobrecarga el operador de asignación "="
@@ -147,7 +146,6 @@ template < class T >
 		}
 
 		//! \name Funciones lectura y escritura de la clase Punto
-
 		/*! 
 			\fn 	 void leerPunto();
 			\brief   Asigna a un Punto las coordenadas "x" e "y" leídas desde el teclado
@@ -159,13 +157,14 @@ template < class T >
 		void leerPunto(){
 			T x, y;
 
-			std::cout << "\n Lectura de las coordenadas de un punto: P(x,y) " << std::endl;
+			std::cout <<BIWHITE<< "\nLectura de las coordenadas de un punto: P(x,y) " << std::endl;
 
-			std::cout << " Abscisa: x --> ";
+			std::cout <<BIBLUE<<"Abscisa: x --> "<<BIYELLOW;
 			std::cin >> x;
 
-			std::cout << " Ordenada: y --> ";
+			std::cout<<BIBLUE<< "Ordenada: y --> "<<BIYELLOW;
 			std::cin >> y;
+			std::cout<<RESET;
 
 			// Se asignan los valores leídos a los atributos del punto   
 			setX(x);

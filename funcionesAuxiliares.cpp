@@ -2,7 +2,7 @@
   \file   funcionesAuxiliares.cpp
   \brief  Código de las funciones auxiliares para el programa principal de la práctica 4
   \author Carlos Luque Córdoba
-  \date   anywhere
+  \date   29/05/2018
 */
 
 #include <cstdlib>
@@ -79,7 +79,7 @@ int ed::menu(){
 	std::cout <<BIBLUE<< "[9] Borrar todos los vertices y lados"<<RESET;
 
 	PLACE(posicion++,13);
-	std::cout <<BIBLUE<<"[10] Insertar una Vertice"<<RESET;
+	std::cout <<BIBLUE<<"[10] Insertar un Vertice"<<RESET;
 
 	PLACE(posicion++,13);
 	std::cout <<BIBLUE<< "[11] Insertar un Lado"<<RESET;
@@ -114,188 +114,143 @@ int ed::menu(){
 }
 
 std::vector<std::vector<float> > ed::prim(ed::Grafo <ed::Punto<float> > &graph, ed::Grafo <ed::Punto<float> > &graph2){
-	// uso una copia de ady porque necesito eliminar columnas
-	unsigned int nVertices=graph.getVectorVertices().size();
-	std::vector< std::vector<float> > adyacencia = graph.getMatrizWLabels();
-	std::vector< std::vector<float> > arbol(nVertices);
-	std::vector<float> markedLines;
-	std::vector<float> _padre;
-	std::vector<float> _hijo;
-	std::vector<float> coste;
-	std::vector<float> :: iterator itVec;
-	float minMax=0;
+	unsigned int nVertices=graph.getVectorVertices().size(); //Numero de vertices del grafo
+	std::vector< std::vector<float> > adyacencia = graph.getMatrizWLabels(); //Se hace una copia de la matriz de adyacencias de la clase grafo para poder borrar lados
+	std::vector< std::vector<float> > arbolAbarcador(nVertices); //Matriz del arbol abarcador
+	std::vector<float> visitados; //Vector de visitados
+	std::vector<float> _padre; //Vector flotantes de FROM (visitados)
+	std::vector<float> _hijo; //Vector flotantes de TO (siguiente)
+	std::vector<float> coste; //Vector flotantes de coste de los lados
+	std::vector<float> :: iterator itVec; //Iterador de flotantes para conseguir el minimo, anterior y el siguiente lado a visitar
+	float minMax=0; //Flotante para recoger la suma del camino mínimo del arbol abarcador
 
-	// Inicializo las distancias del arbol en INF.
+	// Se inicializan todos los lados del arbol a 0
 	for(unsigned int i = 0; i < nVertices; i++)
-	    arbol[i] = std::vector<float> (nVertices, 0);
+	    arbolAbarcador[i] = std::vector<float> (nVertices, 0); 
 
-	float padre = 0;
-	float hijo = 0;
-	while(markedLines.size() + 1 < nVertices){
-	    padre = hijo;
-	    // Marco la fila y elimino la columna del nodo padre.
-	    markedLines.push_back(padre);
+	float from = 0; //Visitados
+	float to = 0; //Siguiente a visitar
+
+	while(visitados.size() + 1 < nVertices){ //Mientras que la cantidad de los superados +1 porque se cuenta el 0 no sea => que el número de vertices
+	    from = to; //Se le asignará a from el siguiente coste mínimo que puede visitar
+	    // Marco la fila y elimino la columna del nodo from.
+	    visitados.push_back(from); //Y se añade al vector de visitados
 	    for(unsigned int i = 0; i < nVertices; i++)
-	        adyacencia[i][padre] = 999;
+	        adyacencia[i][from] = 9999; //Se marcan los lados con 9999 suponiendo que es el infinito
 
 	    // Encuentro la menor distancia entre las filas marcadas.
-	    // El nodo padre es la linea marcada y el nodo hijo es la columna del minimo.
-	    float min = 999;
-	    for(itVec = markedLines.begin(); itVec != markedLines.end(); itVec++)
+	    // El nodo from es la linea marcada y el nodo to es la columna del minimo.
+	    float min = 9999;
+	    for(itVec = visitados.begin(); itVec != visitados.end(); itVec++)
 	        for(unsigned int i = 0; i < nVertices; i++)
-	            if(min > adyacencia[*itVec][i]){
-	                min = adyacencia[*itVec][i];
-	                padre = *itVec;
-	                hijo = i;
+	            if(min > adyacencia[*itVec][i]){ //Si el minimo de coste es mayor que la posicion de la matriz del visitado y lo que valga i en ese momento
+	                min = adyacencia[*itVec][i]; //Se cogera lo que valga la matriz de adyacencia en ese momento porque és menor que min
+	                from = *itVec; //Se guarda en from el lado visitado
+	                to = i; //se guarda en from el siguiente lado a visitar
 	            }
 
-	    arbol[padre][hijo] = min;
-	    arbol[hijo][padre] = min;
-	    minMax+=min;
-	    _padre.push_back(padre+1);
-	    _hijo.push_back(hijo+1);
-	    coste.push_back(min);
+	    arbolAbarcador[from][to] = min; //En la posicion del visitado y el siguiente por visitar de la matriz (EL LADO QUE UNE LOS DOS VERTICES) se guarda el valor mínimo del lado posible
+	    arbolAbarcador[to][from] = min; //Lo mismo para crear una matriz símétrica
+	    minMax+=min;   //Se guarda el valor del lado visitado
+	    _padre.push_back(from+1); //Se guarda el valor del visitado
+	    _hijo.push_back(to+1); //Se guarda el valor del siguiente a visitar
+	    coste.push_back(min); //Se guarda el valor del coste del lado
 	}
-	std::cout<<BIGREEN<<"El arbol abarcador de coste mínimo generado por el algitmo es: "<<RESET<<std::endl;
-	graph.setPadre(_padre);
-	graph.setHijo(_hijo);
-	graph.setCoste(coste);
-	graph.setMax(minMax);
-	return arbol;
+	graph.setPadre(_padre); //Ajusta el vector de FROM de la clase grafo
+	graph.setHijo(_hijo); //Ajusta el vector de TO de la clase grafo
+	graph.setCoste(coste); //Ajusta el vector de costes de lados de la clase grafo
+	graph.setMax(minMax); //Ajusta el atributo flotante de la clase grafo
+	return arbolAbarcador;
 }
 
-// Devuelve la matriz de adyacencia del árbol mínimo.
 std::vector<std::vector<float> > ed::kruskal(ed::Grafo <ed::Punto<float> > &graph, ed::Grafo <ed::Punto<float> > &graph2){
-    std::vector< std::vector<float> > adyacencia = graph.getMatrizWLabels();
-    int nVertices=graph.getVectorVertices().size();
-    std::vector<float> _padre;
-	std::vector<float> _hijo;
-	std::vector<float> coste;
-    std::vector< std::vector<float> > arbol(nVertices);
+    std::vector< std::vector<float> > adyacencia = graph.getMatrizWLabels(); //Se hace una copia de la matriz de adyacencias de la clase grafo para poder borrar lados
+    int nVertices=graph.getVectorVertices().size(); //Número de vertices del grafo
+    std::vector<float> _padre; //Vector flotantes de FROM (visitados)
+    std::vector<float> _hijo; //Vector flotantes de TO (no visitados)
+    std::vector<float> coste; //Vector flotantes de coste de los lados
+    std::vector< std::vector<float> > arbolAbarcador(nVertices); //Matriz del arbol abarcador
     std::vector<float> visitado(nVertices); // Indica el que nodo ha sido visitado
-    float minMax=0;
+    float minMax=0;  //Flotante para recoger la suma del camino mínimo del arbol abarcador
 
     for(int i = 0; i < nVertices; i++){
-        arbol[i] =std::vector<float> (nVertices, 0);
+        arbolAbarcador[i] =std::vector<float> (nVertices, 0); //Se inicializan los lados a 0
         visitado[i] = i;
     }
 
-    float Vertice1=0;
-    float Vertice2=0;
-    float arcos = 1; // Atributo para controlar los ciclos
-    while(arcos < nVertices){
-        //Con este while buscamos el camino mínimo sin tener un ciclo
-        float min = 9999; //Infinito para los lados no visitados
+    float Vertice1=0; //Atributo FROM (visitado)
+    float Vertice2=0; //Atributo TO (siguiente)
+    float ciclos = 1; // Atributo para evitar escoger lados que produzcan ciclos
+    while(ciclos < nVertices){
+        //Con este while buscamos un lado que no produzca ciclos
+        float min = 9999; //Atributo de comparación
         for(int i = 0; i < nVertices; i++)
             for(int j = 0; j < nVertices; j++)
-                if(min > adyacencia[i][j] && adyacencia[i][j]!=0 && visitado[i] != visitado[j]){
-                    min = adyacencia[i][j];
-                    Vertice1 = i;
-                    Vertice2 = j;
+                if(min > adyacencia[i][j] && adyacencia[i][j]!=0 && visitado[i] != visitado[j]){ //Si min es mayor que lo que valga la matriz de adyacencias en esa posición y la matriz de adyacencias en esa 
+                                                                                                 //posición sea 0 y que el visitado en la posicion i no sea igual al que se ha visitado en la posición j
+                    min = adyacencia[i][j]; //Se cogera lo que valga la matriz de adyacencia en esa posición porque és menor que el valor de min
+                    Vertice1 = i; //From será i
+                    Vertice2 = j; //To será j
                 }
-
-        // Si los nodos no visitadon al mismo árbol agrego el arco al árbol mínimo.
-        if(visitado[Vertice1] != visitado[Vertice2]){
-            arbol[Vertice1][Vertice2] = min;
-            arbol[Vertice2][Vertice1] = min;
-            _padre.push_back(Vertice1);
-		    _hijo.push_back(Vertice2);
-		    coste.push_back(min);
-		    minMax+=min;
-            // Todos los nodos del árbol del Vertice2 ahora visitadon al árbol del Vertice1.
+            //"Sort de lados de coste mínimo"
+        if(visitado[Vertice1] != visitado[Vertice2]){ //Si el visitado en la posicion from no es igual al visitado en la posicion to
+            arbolAbarcador[Vertice1][Vertice2] = min; //En la posicion del visitado y el siguiente por visitar de la matriz (EL LADO QUE UNE LOS DOS VERTICES) se guarda el valor mínimo del lado posible
+            arbolAbarcador[Vertice2][Vertice1] = min; //Para generar la matriz simétrica
+            _padre.push_back(Vertice1); //Ajusta el vector de FROM de la clase grafo
+		    _hijo.push_back(Vertice2); //Ajusta el vector de TO de la clase grafo
+		    coste.push_back(min); //Ajusta el vector de costes de lados de la clase grafo
+		    minMax+=min; //Suma del camino mínimo del arbol abarcador
+           
+            //Los lados TO (siguiente a visitar) visitan el subarbol de FROM (visitados)
         	float temp = visitado[Vertice2];
         	visitado[Vertice2] = visitado[Vertice1];
         	for(int k = 0; k < nVertices; k++)
         		if(visitado[k] == temp)
         			visitado[k] = visitado[Vertice1];
-            arcos++;
+            ciclos++; //Contador para controlar los ciclos
         }
     }
-   	std::cout<<BIGREEN<<"El arbol abarcador de coste mínimo generado por el algitmo es: "<<RESET<<std::endl;
-	graph.setPadre(_padre);
-	graph.setHijo(_hijo);
-	graph.setCoste(coste);
-	graph.setMax(minMax);
-    return arbol;
+    graph.setPadre(_padre); //Ajusta el vector de FROM de la clase grafo
+    graph.setHijo(_hijo); //Ajusta el vector de TO de la clase grafo
+    graph.setCoste(coste); //Ajusta el vector de costes de lados de la clase grafo
+    graph.setMax(minMax); //Ajusta el atributo flotante de la clase grafo
+    return arbolAbarcador;
 }
 
-void ed::cargarFichero(ed::Grafo <ed::Punto<float> > &graph){
+void ed::cargarFichero(ed::Grafo <ed::Punto<float> > &graph, bool direct){
 float x1, y1, x2, y2, f;
 bool value;
 int opcion2=0;
 std::ifstream grap;
 std::string nombreFichero;
 int directed=graph.getDirected();
-std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"1"<<BIGREEN<<" para cargar los vertices en el grafo desde el fichero" <<RESET;
-std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"2"<<BIGREEN<<" para cargar los lados en el grafo desde el fichero" <<RESET;
-std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"3"<<BIGREEN<<" para cargar los vertices y los lados en el grafo desde el fichero" <<RESET;
+std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"[1]"<<BIGREEN<<" para cargar los vertices en el grafo desde el fichero" <<RESET;
+std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"[2]"<<BIGREEN<<" para cargar los lados en el grafo desde el fichero" <<RESET;
+std::cout <<BIGREEN<< "\nPulse "<<BIYELLOW<<"[3]"<<BIGREEN<<" para cargar los vertices y los lados en el grafo desde el fichero" <<RESET;
+std::cout << BIRED << "\nPulse "<<BIYELLOW<<"[0]"<<BIRED<<" Volver al menú "<<RESET;
 std::cout <<BIBLUE<<"\n\nIntroduce la opción deseada: "<<BIYELLOW;
 std::cin>>opcion2;
-    if(opcion2>0 && opcion2<4){
-        std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
-        switch(opcion2){
-            case 1:
-                PLACE(1,1);
-                std::cout<<BIPURPLE<<"[2] Cargar el Grafo de vertices desde un fichero"<<RESET<<std::endl;
-                PLACE(2,2);
-                std::cout <<BIRED<<"ATENCION!!! NO INTRODUZCA LADOS" <<RESET<< std::endl;
-                std::cout<<BIBLUE<<"Introduce el nombre del fichero de vertices: "<<BIYELLOW;
-                std::cin>>nombreFichero;
-                std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
-                PLACE(1,1);
-                grap.open(nombreFichero.c_str());
-                if(grap.is_open()){
-                    while(!grap.eof()){
-                        grap>>x1>>y1;
-                        ed::Punto<float> punto(x1, y1);
-                        if(!grap.eof()){
-                            graph.addVertex(punto);
-                        }
-                    }
-                grap.close();
-                value=true;
-                }else
-                    value=false;
-                
-                if(value){
-                    std::cout<<BIGREEN<<"\nEl fichero de vertices ha sido cargado con exito"<<RESET<<std::endl;
-                    std::cin.ignore();
-                }
-                else{
-                    std::cout<<BIRED<<"Error al cargar el fichero de vertices"<<RESET<<std::endl;
-                    std::cin.ignore();
-                }
-                break;
-            
-            case 2:
-				PLACE(1,1);
-                std::cout<<BIPURPLE<<"[2] Cargar el Grafo de lados desde un fichero"<<RESET<<std::endl;
-                PLACE(2,2);
-                if(graph.getVectorVertices().size()==0){
-                    std::cout<<ONIRED<<BIYELLOW<<"El Grafo no tiene vertices, introduzca primero dos vertices como mínimo"<<RESET<<std::endl;
-                    std::cin.ignore();
-                }
-                else{
-                    std::cout <<BIRED<<"ATENCION!!! NO INTRODUZCA VERTICES" <<RESET<< std::endl;
-                    std::cout<<BIBLUE<<"Introduce el nombre del fichero de lados: "<<BIYELLOW;
+std::cout<<RESET;
+    if(opcion2!=0){
+        if(opcion2>0 && opcion2<4){
+            std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
+            switch(opcion2){
+                case 1: //Solo se cargan vertices
+                    PLACE(1,1);
+                    std::cout<<BIPURPLE<<"[2] Cargar el Grafo de vertices desde un fichero"<<RESET<<std::endl;
+                    PLACE(2,1);
+                    std::cout <<BIRED<<"ATENCION!!! NO INTRODUZCA LADOS" <<RESET<< std::endl;
+                    std::cout<<BIBLUE<<"Introduce el nombre del fichero de vertices: "<<BIYELLOW;
                     std::cin>>nombreFichero;
                     std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
                     PLACE(1,1);
                     grap.open(nombreFichero.c_str());
                     if(grap.is_open()){
                         while(!grap.eof()){
-                            grap>>x1>>y1>>x2>>y2;
-                            ed::Punto<float> punto1(x1, y1);
-                            ed::Punto<float> punto2(x2, y2);
-                            f=ed::calcularDistanciaEuclidea(punto1.getX(), punto1.getY(), punto2.getX(), punto2.getY());
-                            ed::Vertice<ed::Punto<float> > v1(punto1, -1);
-                           ed::Vertice<ed::Punto<float> > v2(punto2, -1);
-                           ed::Lado<ed::Punto<float> >Lado(f);
-
-                            if(graph.devolverEtiqueta(v1)!=0 && graph.devolverEtiqueta(v2)!=0){
-                                if(!grap.eof()){
-                                    graph.addEdge(graph.devolverEtiqueta(v1), graph.devolverEtiqueta(v2), Lado,  f);
-                                }
+                            grap>>x1>>y1;
+                            ed::Punto<float> punto(x1, y1);
+                            if(!grap.eof()){
+                                graph.addVertex(punto);
                             }
                         }
                     grap.close();
@@ -304,98 +259,83 @@ std::cin>>opcion2;
                         value=false;
                     
                     if(value){
-                        std::cout<<BIGREEN<<"\nEl fichero de lados ha sido cargado con exito"<<RESET<<std::endl;
+                        graph.imprimirVertices();
+                        std::cout<<BIGREEN<<"\nEl fichero de vertices ha sido cargado con exito"<<RESET<<std::endl;
                         std::cin.ignore();
                     }
                     else{
-                        std::cout<<BIRED<<"Error al cargar el fichero de lados"<<RESET<<std::endl;
+                        std::cout<<BIRED<<"Error al cargar el fichero de vertices"<<RESET<<std::endl;
                         std::cin.ignore();
                     }
-                }
-                break;
-            
-            case 3:
-            	PLACE(1,1);
-                std::cout<<BIPURPLE<<"[2] Cargar el Grafo de vertices y lados desde ficheros"<<RESET<<std::endl;
-                PLACE(2,2);
-                std::cout <<BIRED<<"PRIMERO DEBE INTRODUCIR LOS VERTICES PARA PODER INTRODUCIR LOS LADOS" <<RESET<< std::endl;
-                std::cout<<BIBLUE<<"Introduce el nombre del fichero de vertices: "<<BIYELLOW;
-                std::cin>>nombreFichero;
-                std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
-                PLACE(1,1);
-                grap.open(nombreFichero.c_str());
-                if(grap.is_open()){
-                    while(!grap.eof()){
-                        grap>>x1>>y1;
-                        ed::Punto<float> punto(x1, y1);
-                        if(!grap.eof()){
-                            graph.addVertex(punto);
+                    break;
+                
+                case 2: //Solo se cargan lados
+    				PLACE(1,1);
+                    std::cout<<BIPURPLE<<"[2] Cargar el Grafo de lados desde un fichero"<<RESET<<std::endl;
+                    PLACE(2,1);
+                    if(graph.getVectorVertices().size()==0){
+                        std::cout<<ONIRED<<BIYELLOW<<"El Grafo no tiene vertices, introduzca primero dos vertices como mínimo"<<RESET<<std::endl;
+                        std::cin.ignore();
+                    }
+                    else{
+                        std::cout <<BIRED<<"ATENCION!!! NO INTRODUZCA VERTICES" <<RESET<< std::endl;
+                        std::cout<<BIBLUE<<"Introduce el nombre del fichero de lados: "<<BIYELLOW;
+                        std::cin>>nombreFichero;
+                        std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
+                        PLACE(1,1);
+                        grap.open(nombreFichero.c_str());
+                        if(grap.is_open()){
+                            while(!grap.eof()){
+                                grap>>x1>>y1>>x2>>y2;
+                                ed::Punto<float> punto1(x1, y1);
+                                ed::Punto<float> punto2(x2, y2);
+                                f=ed::calcularDistanciaEuclidea(punto1.getX(), punto1.getY(), punto2.getX(), punto2.getY());
+                                ed::Vertice<ed::Punto<float> > v1(punto1, -1);
+                                ed::Vertice<ed::Punto<float> > v2(punto2, -1);
+                                ed::Lado<ed::Punto<float> >Lado(f);
+
+                                if(graph.devolverEtiqueta(v1)!=0 && graph.devolverEtiqueta(v2)!=0){
+                                    if(graph.getDirected()==true)
+                                        graph.addEdge(graph.devolverEtiqueta(v1), graph.devolverEtiqueta(v2), Lado,  f);
+                                    else{
+                                        graph.addEdge(graph.devolverEtiqueta(v1), graph.devolverEtiqueta(v2), Lado,  f);
+                                        graph.addEdge(graph.devolverEtiqueta(v2), graph.devolverEtiqueta(v1), Lado,  f);
+                                    }
+                                }
+                            }
+                        grap.close();
+                        value=true;
+                        }else
+                            value=false;
+                        
+                        if(value){
+                            graph.imprimirLados();
+                            std::cout<<BIGREEN<<"\nEl fichero de lados ha sido cargado con exito"<<RESET<<std::endl;
+                            std::cin.ignore();
+                        }
+                        else{
+                            std::cout<<BIRED<<"Error al cargar el fichero de lados"<<RESET<<std::endl;
+                            std::cin.ignore();
                         }
                     }
-                grap.close();
-                value=true;
-                }else
-                    value=false;
+                    break;
                 
-                if(value){
-                    std::cout<<BIGREEN<<"\nEl fichero de vertices ha sido cargado con exito"<<RESET<<std::endl;
-                    std::cin.ignore();
-                }
-                else{
-                    std::cout<<BIRED<<"Error al cargar el fichero de vertices"<<RESET<<std::endl;
-                    std::cin.ignore();
-                }
-                PLACE(25,1);
-                std::cout << "Pulse ";
-                std::cout << BIGREEN;
-                std::cout << "ENTER";
-                std::cout << RESET;
-                std::cout << " para introducir los ";
-                std::cout << INVERSE;
-                std::cout << "lados"; 
-                std::cout << RESET;
-
-                // Pausa
-                std::cin.ignore();
-                std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
-                
-                value=false;
-
-                if(graph.getVectorVertices().size()==0){
+                case 3: //Se cargan vertices y lados
                 	PLACE(1,1);
-                    std::cout<<ONIRED<<BIYELLOW<<"El Grafo no tiene vertices, introduzca primero dos vertices como mínimo"<<RESET<<std::endl;
-                    PLACE(25,1);
-                    std::cout << "Pulse ";
-                    std::cout << BIGREEN;
-                    std::cout << "ENTER";
-                    std::cout << RESET;
-                    std::cout << " para mostrar el ";
-                    std::cout << INVERSE;
-                    std::cout << "menú"; 
-                    std::cout << RESET;
-                }
-                else{
-                    PLACE(1,1);
-                   	std::cout<<BIPURPLE<<"[3] Grabar las matrices de adyacencia en un fichero"<<RESET<<std::endl;
-                    std::cout<<BIBLUE<<"Introduce el nombre del fichero de lados: "<<BIYELLOW;
+                    std::cout<<BIPURPLE<<"[2] Cargar el Grafo de vertices y lados desde ficheros"<<RESET<<std::endl;
+                    PLACE(2,1);
+                    std::cout <<BIRED<<"PRIMERO DEBE INTRODUCIR LOS VERTICES PARA PODER INTRODUCIR LOS LADOS" <<RESET<< std::endl;
+                    std::cout<<BIBLUE<<"Introduce el nombre del fichero de vertices: "<<BIYELLOW;
                     std::cin>>nombreFichero;
                     std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
                     PLACE(1,1);
                     grap.open(nombreFichero.c_str());
                     if(grap.is_open()){
                         while(!grap.eof()){
-                            grap>>x1>>y1>>x2>>y2;
-                            ed::Punto<float> punto1(x1, y1);
-                            ed::Punto<float> punto2(x2, y2);
-                            f=ed::calcularDistanciaEuclidea(punto1.getX(), punto1.getY(), punto2.getX(), punto2.getY());
-                            ed::Vertice<ed::Punto<float> > v1(punto1, -1);
-                            ed::Vertice<ed::Punto<float> > v2(punto2, -1);
-                            ed::Lado<ed::Punto<float> >Lado(f);
-
-                            if(graph.devolverEtiqueta(v1)!=0 && graph.devolverEtiqueta(v2)!=0){
-                                if(!grap.eof()){
-                                    graph.addEdge(graph.devolverEtiqueta(v1), graph.devolverEtiqueta(v2), Lado,  f);
-                                }
+                            grap>>x1>>y1;
+                            ed::Punto<float> punto(x1, y1);
+                            if(!grap.eof()){
+                                graph.addVertex(punto);
                             }
                         }
                     grap.close();
@@ -404,11 +344,12 @@ std::cin>>opcion2;
                         value=false;
                     
                     if(value){
-                        std::cout<<BIGREEN<<"\nEl fichero lados ha sido cargado con exito"<<RESET<<std::endl;
+                        graph.imprimirVertices();
+                        std::cout<<BIGREEN<<"\nEl fichero de vertices ha sido cargado con exito"<<RESET<<std::endl;
                         std::cin.ignore();
                     }
                     else{
-                        std::cout<<BIRED<<"Error al cargar el fichero de lados"<<RESET<<std::endl;
+                        std::cout<<BIRED<<"Error al cargar el fichero de vertices"<<RESET<<std::endl;
                         std::cin.ignore();
                     }
                     PLACE(25,1);
@@ -416,25 +357,97 @@ std::cin>>opcion2;
                     std::cout << BIGREEN;
                     std::cout << "ENTER";
                     std::cout << RESET;
-                    std::cout << " para mostrar el ";
+                    std::cout << " para introducir los ";
                     std::cout << INVERSE;
-                    std::cout << "menú"; 
+                    std::cout << "lados"; 
                     std::cout << RESET;
-                }
-            break;
+
+                    // Pausa
+                    std::cin.ignore();
+                    std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
+                    
+                    value=false;
+
+                    if(graph.getVectorVertices().size()==0){
+                    	PLACE(1,1);
+                        std::cout<<ONIRED<<BIYELLOW<<"El Grafo no tiene vertices, introduzca primero dos vertices como mínimo"<<RESET<<std::endl;
+                        PLACE(2,1);
+                        std::cout << "Pulse ";
+                        std::cout << BIGREEN;
+                        std::cout << "ENTER";
+                        std::cout << RESET;
+                        std::cout << " para mostrar el ";
+                        std::cout << INVERSE;
+                        std::cout << "menú"; 
+                        std::cout << RESET;
+                    }
+                    else{
+                        PLACE(1,1);
+                       	std::cout<<BIPURPLE<<"[2] Cargar el Grafo de vertices y lados desde fichero"<<RESET<<std::endl;
+                        std::cout<<BIBLUE<<"Introduce el nombre del fichero de lados: "<<BIYELLOW;
+                        std::cin>>nombreFichero;
+                        std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
+                        PLACE(1,1);
+                        grap.open(nombreFichero.c_str());
+                        if(grap.is_open()){
+                            while(!grap.eof()){
+                                grap>>x1>>y1>>x2>>y2;
+                                ed::Punto<float> punto1(x1, y1);
+                                ed::Punto<float> punto2(x2, y2);
+                                f=ed::calcularDistanciaEuclidea(punto1.getX(), punto1.getY(), punto2.getX(), punto2.getY());
+                                ed::Vertice<ed::Punto<float> > v1(punto1, -1);
+                                ed::Vertice<ed::Punto<float> > v2(punto2, -1);
+                                ed::Lado<ed::Punto<float> >Lado(f);
+
+                                if(graph.devolverEtiqueta(v1)!=0 && graph.devolverEtiqueta(v2)!=0){
+                                    if(graph.getDirected()==true)
+                                        graph.addEdge(graph.devolverEtiqueta(v1), graph.devolverEtiqueta(v2), Lado,  f);
+                                    else{
+                                        graph.addEdge(graph.devolverEtiqueta(v1), graph.devolverEtiqueta(v2), Lado,  f);
+                                        graph.addEdge(graph.devolverEtiqueta(v2), graph.devolverEtiqueta(v1), Lado,  f);
+                                    }
+                                }
+                            }
+                        grap.close();
+                        value=true;
+                        }else
+                            value=false;
+                        
+                        if(value){
+                            graph.imprimirLados();
+                            std::cout<<BIGREEN<<"\nEl fichero lados ha sido cargado con exito"<<RESET<<std::endl;
+                            std::cin.ignore();
+                        }
+                        else{
+                            std::cout<<BIRED<<"Error al cargar el fichero de lados"<<RESET<<std::endl;
+                            std::cin.ignore();
+                        }
+                        PLACE(25,1);
+                        std::cout << "Pulse ";
+                        std::cout << BIGREEN;
+                        std::cout << "ENTER";
+                        std::cout << RESET;
+                        std::cout << " para mostrar el ";
+                        std::cout << INVERSE;
+                        std::cout << "menú"; 
+                        std::cout << RESET;
+                    }
+                break;
+            }
+        }else{
+            std::cout<<BIRED<<"OPCIÓN "<<directed<<" NO VALIDA!!"<<RESET<<std::endl;
+            std::cin.ignore();
         }
-    }else{
-        std::cout<<BIRED<<"OPCIÓN "<<directed<<" NO VALIDA!!"<<RESET<<std::endl;
-        std::cin.ignore();
-    }
+    }else
+        return;
 }
 
-bool ed::grabarFichero(ed::Grafo <ed::Punto<float> > &graph){
+bool ed::grabarFichero(ed::Grafo <ed::Punto<float> > &graph, bool p, bool k){
 	int control;
 	char nombreFichero2[10];
 	bool val=false;
 	ed::Grafo <ed::Punto<float> > graph2(graph.getDirected());
-	PLACE(2,2);
+	PLACE(2,1);
     std::cout<<BIBLUE<<"Introduce el nombre del fichero para la Matriz de Adyacencias: "<<BIYELLOW;
     std::cin>>nombreFichero2;
     std::cout<<RESET<<std::endl;
@@ -454,21 +467,30 @@ bool ed::grabarFichero(ed::Grafo <ed::Punto<float> > &graph){
         std::cout<<BIGREEN<<"Se ha creado el fichero de la Matriz de Adyacencias sin etiquetas correctamente"<<RESET<<std::endl;
         val=true;
     }
+    if(p==true){
+        std::cout<<BIBLUE<<"Introduce el nombre del fichero para imprimir el Algoritmo de Prim: "<<BIYELLOW;
+        std::cin>>nombreFichero2;
+        std::cout<<RESET<<std::endl;
+        graph2.setMatrizWLabels(ed::prim(graph, graph2));
+        graph.matricesAFicheroAlgoritmos(nombreFichero2, graph.getVectorVertices(), graph2.getMatrizWLabels());
+        std::cout<<BIGREEN<<"Se ha creado el fichero del Algoritmo de Prim correctamente"<<RESET<<std::endl;
+    }else{
+        std::cout<<BIRED<<"No se puede guardar el arbol abarcador de prim porque el grafo no es conexo"<<RESET<<std::endl;
+        std::cin.ignore();
+    }
 
-    std::cout<<BIBLUE<<"Introduce el nombre del fichero para imprimir el Algoritmo de Prim: "<<BIYELLOW;
-    std::cin>>nombreFichero2;
-    std::cout<<RESET<<std::endl;
-    graph2.setMatrizWLabels(ed::prim(graph, graph2));
-    graph.matricesAFicheroAlgoritmos(nombreFichero2, graph.getVectorVertices(), graph2.getMatrizWLabels());
-    std::cout<<BIGREEN<<"Se ha creado el fichero del Algoritmo de Prim correctamente"<<RESET<<std::endl;
-
-    std::cout<<BIBLUE<<"Introduce el nombre del fichero para imprimir el Algoritmo de Kruskal: "<<BIYELLOW;
-    std::cin>>nombreFichero2;
-    std::cout<<RESET<<std::endl;
-    graph2.setMatrizWLabels(ed::kruskal(graph, graph2));
-    graph.matricesAFicheroAlgoritmos(nombreFichero2, graph.getVectorVertices(), graph2.getMatrizWLabels());
-    std::cout<<BIGREEN<<"Se ha creado el fichero del Algoritmo de Kruskal correctamente"<<RESET<<std::endl;
-    std::cin.ignore();
+    if(p==true){
+        std::cout<<BIBLUE<<"Introduce el nombre del fichero para imprimir el Algoritmo de Kruskal: "<<BIYELLOW;
+        std::cin>>nombreFichero2;
+        std::cout<<RESET<<std::endl;
+        graph2.setMatrizWLabels(ed::kruskal(graph, graph2));
+        graph.matricesAFicheroAlgoritmos(nombreFichero2, graph.getVectorVertices(), graph2.getMatrizWLabels());
+        std::cout<<BIGREEN<<"Se ha creado el fichero del Algoritmo de Kruskal correctamente"<<RESET<<std::endl;
+        std::cin.ignore();
+    }else{
+        std::cout<<BIRED<<"No se puede guardar el arbol abarcador de kruskal porque el grafo no es conexo"<<RESET<<std::endl;
+        std::cin.ignore();
+    }
     return val;
 }
 
@@ -481,7 +503,7 @@ void ed::generarPNGPrim(char *nombreFichero2, std::vector<float> padre, std::vec
 		f=fopen(nombreFichero2, "w" );
 		fprintf(f, "graph A {\n");
     for(unsigned int i=0;i<padre.size();i++){
-		fprintf(f, "%.2f -- %.2f [label=\"%.4f\"];\n", padre[i], hijo[i], coste[i]);
+		fprintf(f, "%.2f -- %.2f [label=\"%.4f\"];\n", padre[i]+1, hijo[i]+1, coste[i]+1); //Herramienta dot de graphviz
 	}
 	fprintf(f, "}");
 	fclose(f);
@@ -496,8 +518,93 @@ void ed::generarPNGKruskal(char *nombreFichero2, std::vector<float> padre, std::
 		f=fopen(nombreFichero2, "w" );
 		fprintf(f, "graph A {\n");
     for(unsigned int i=0;i<padre.size();i++){
-		fprintf(f, "%.2f -- %.2f [label=\"%.4f\"];\n", padre[i], hijo[i], coste[i]);
+		fprintf(f, "%.2f -- %.2f [label=\"%.4f\"];\n", padre[i]+1, hijo[i]+1, coste[i]+1); //Herramienta dot de graphviz
 	}
 	fprintf(f, "}");
 	fclose(f);
+}
+
+bool ed::principio(){
+    int directed;
+    bool direct=false;
+    PLACE(1,1);
+    std::cout <<BIGREEN<<"BIENVENIDO AL PROGRAMA PRINCIPAL DEL GRAFO DE CARLOS LUQUE CÓRDOBA";
+    PLACE(2,3);
+
+    std::cout <<BICYAN<< "\nPulse "<<BIYELLOW<<"[1]"<<BICYAN<<" para activar el grafo Dirigido"<<RESET;
+    std::cout <<BICYAN<< "\nPulse "<<BIYELLOW<<"[2]"<<BICYAN<<" para activar el grafo No Dirigido"<<RESET;
+    std::cout << BIRED << "\nPulse "<<BIYELLOW<<"[0]"<<BIRED<<" cerrar el programa "<<RESET;
+
+    std::cout <<BIBLUE<<"\n\nIntroduce la opción deseada: "<<BIYELLOW;
+    std::cin>>directed;
+    std::cout<<RESET<<CLEAR_SCREEN<<std::endl;
+    if(directed!=0){
+        if(directed==1 || directed==2){
+            switch(directed){
+                case 1:
+                    direct=true;
+                    break;
+                
+                case 2:
+                    direct=false;
+                    break;
+            }
+             return direct;
+        }else{
+            std::cout<<BIRED<<"OPCIÓN "<<directed<<" NO VALIDA!!"<<RESET<<std::endl;
+            exit(-1);
+        }
+    }else{
+        PLACE(1,1);
+        std::cout<<BIRED"Saliendo... gracias por usar mi programa"<<RESET<<std::endl;
+        exit(-1);      
+    }
+}
+
+void ed::borrarVerticeLados(ed::Grafo <ed::Punto<float> > &graph){
+    ed::Punto<float> punto(0, 0);
+    punto.leerPunto();
+    ed::Punto<float> punto2(punto);
+    ed::Vertice<ed::Punto<float> >v(punto, -1);
+    ed::Vertice<ed::Punto<float> >v2(punto, -1);
+    v2.setLabel(graph.devolverEtiqueta(v));
+    graph.removeVertexEdges(v2);
+}
+
+void ed::leerVertice(ed::Grafo <ed::Punto<float> > &graph){
+    bool val;
+    ed::Punto<float> punto(0, 0);
+    punto.leerPunto();
+    val=graph.addVertex(punto);
+    if(val){
+        graph.getVectorVertices()[graph.getVectorVertices().size()-1].imprimirVertice();
+        std::cin.ignore();
+    }else
+        return;
+}
+
+void ed::leerLado(ed::Grafo <ed::Punto<float> > &graph){
+    int u, v;
+    bool val;
+    float coste=0;
+    ed::Lado<Punto<float> >lado(0);
+    std::cout<<BIWHITE<<"Vertices Disponibles"<<RESET<<std::endl;
+    for(unsigned int i=1;i<graph.getVectorVertices().size()+1;i++){
+        std::cout<<BIYELLOW<<i<<" ";
+    }
+    std::cout<<BIBLUE<<"\nIntroduzca el primer Vertice del lado"<<RESET<<BIYELLOW<<std::endl;
+    cin>>u;
+    std::cout<<RESET;
+    std::cout<<BIBLUE<<"Introduzca el segundo Vertice del lado"<<RESET<<BIYELLOW<<std::endl;
+    cin>>v;
+    std::cout<<RESET;
+    if(graph.devolverBoolEtiqueta(u) && graph.devolverBoolEtiqueta(v)){
+        coste=ed::calcularDistanciaEuclidea(graph.devolverPunto(u).getX(), graph.devolverPunto(u).getY(), graph.devolverPunto(v).getX(), graph.devolverPunto(v).getY());
+        val=graph.addEdge(u,v,lado,coste); 
+        if(val){
+            graph.getVectorLado()[graph.getVectorLado().size()-1].imprimirLado();
+            std::cin.ignore();
+        }else
+            return;
+    }
 }
